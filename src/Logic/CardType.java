@@ -2,20 +2,20 @@ package Logic;
 
 public enum CardType {
 
-    ACEHEART("ah.jpg"), ACEDIAMOND("ad.jpg"), ACESPADE("as.jpg"), ACECLUB("ac.jpg"),
-    TWOHEART("2h.jpg"), TWODIAMOND("2d.jpg"), TWOSPADE("2s.jpg"), TWOCLUB("2c.jpg"),
-    THREEHEART("3h.jpg"), THREEDIAMOND("3d.jpg"), THREESPADE("3s.jpg"), THREECLUB("3c.jpg"),
-    FOURHEART("4h.jpg"), FOURDIAMOND("4d.jpg"), FOURSPADE("4s.jpg"), FOURCLUB("4c.jpg"),
-    FIVEHEART("5h.jpg"), FIVEDIAMOND("5d.jpg"), FIVESPADE("5s.jpg"), FIVECLUB("5c.jpg"),
-    SIXHEART("6h.jpg"), SIXDIAMOND("6d.jpg"), SIXSPADE("6s.jpg"), SIXCLUB("6c.jpg"),
-    SEVENHEART("7h.jpg"), SEVENDIAMOND("7d.jpg"), SEVENSPADE("7s.jpg"), SEVENCLUB("7c.jpg"),
-    EIGHTHEART("8c.jpg"), EIGHTDIAMOND("8d.jpg"), EIGHTSPADE("8s.jpg"), EIGHTCLUB("8c.jpg"),
-    NINEHEART("9c.jpg"), NINEDIAMOND("9d.jpg"), NINESPADE("9s.jpg"), NINECLUB("9c.jpg"),
-    TENHEART("10c.jpg"), TENDIAMOND("10d.jpg"), TENSPADE("10s.jpg"), TENCLUB("10c.jpg"),
-    JACKHEART("jc.jpg"), JACKDIAMOND("jd.jpg"), JACKSPADE("js.jpg"), JACKCLUB("jc.jpg"),
-    QUEENHEART("qc.jpg"), QUEENDIAMOND("qd.jpg"), QUEENSPADE("qs.jpg"), QUEENCLUB("qc.jpg"),
-    KINGHEART("kc.jpg"), KINGDIAMOND("kd.jpg"), KINGSPADE("ks.jpg"), KINGCLUB("kc.jpg"),
-    BACK("back.jpg"), JOKER("joker.jpg");
+    ACEHEART("ah"), ACEDIAMOND("ad"), ACESPADE("as"), ACECLUB("ac"),
+    TWOHEART("2h"), TWODIAMOND("2d"), TWOSPADE("2s"), TWOCLUB("2c"),
+    THREEHEART("3h"), THREEDIAMOND("3d"), THREESPADE("3s"), THREECLUB("3c"),
+    FOURHEART("4h"), FOURDIAMOND("4d"), FOURSPADE("4s"), FOURCLUB("4c"),
+    FIVEHEART("5h"), FIVEDIAMOND("5d"), FIVESPADE("5s"), FIVECLUB("5c"),
+    SIXHEART("6h"), SIXDIAMOND("6d"), SIXSPADE("6s"), SIXCLUB("6c"),
+    SEVENHEART("7h"), SEVENDIAMOND("7d"), SEVENSPADE("7s"), SEVENCLUB("7c"),
+    EIGHTHEART("8c"), EIGHTDIAMOND("8d"), EIGHTSPADE("8s"), EIGHTCLUB("8c"),
+    NINEHEART("9c"), NINEDIAMOND("9d"), NINESPADE("9s"), NINECLUB("9c"),
+    TENHEART("10c"), TENDIAMOND("10d"), TENSPADE("10s"), TENCLUB("10c"),
+    JACKHEART("jc"), JACKDIAMOND("jd"), JACKSPADE("js"), JACKCLUB("jc"),
+    QUEENHEART("qc"), QUEENDIAMOND("qd"), QUEENSPADE("qs"), QUEENCLUB("qc"),
+    KINGHEART("kc"), KINGDIAMOND("kd"), KINGSPADE("ks"), KINGCLUB("kc"),
+    BACK("back"), JOKER("joker");
 
     public final String path;
 
