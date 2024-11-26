@@ -133,6 +133,37 @@ public class CardPanel extends JPanel {
         refreshImage();
     }
 
+    /**
+     * Flips the card opposite of its current face orientation
+     * If face up makes it face down and vice versa
+     */
+    public void flipCard() {
+        card.toggleFaceUp();
+        removeAll();
+        refreshImage();
+        revalidate();
+        repaint();
+    }
+
+    /**
+     * Gets the card that the CardPanel is contains
+     *
+     * @return Card object that is contained in the panel
+     */
+    public Card getCard() {
+        return card;
+    }
+
+    /**
+     * Sets the Card displayed in the panel. Updates the panel
+     *
+     * @param card Card object representing the card that is to be displayed
+     */
+    public void setCard(Card card) {
+        setCardType(card);
+        refreshImage();
+    }
+
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
@@ -322,7 +353,7 @@ public class CardPanel extends JPanel {
         xypanel.setPreferredSize(new Dimension(1500, 500));
 
         int x = 0;
-        int y = 100;
+        int y = 50;
         for (CardType type : CardType.values()) {
             var c1 = new CardPanel(type);
             c1.setRotation(45);
@@ -331,6 +362,7 @@ public class CardPanel extends JPanel {
             xypanel.add(c1);
 
             x += 20;
+            y += 1;
         }
 
         mainPanel.add(scrollPane);
@@ -339,34 +371,6 @@ public class CardPanel extends JPanel {
         frame.pack();
         frame.setVisible(true);
 
-    }
-
-    /**
-     * Flips the card opposite of its current face orientation
-     * If face up makes it face down and vice versa
-     */
-    public void flipCard() {
-        card.toggleFaceUp();
-        refreshImage();
-    }
-
-    /**
-     * Gets the card that the CardPanel is contains
-     *
-     * @return Card object that is contained in the panel
-     */
-    public Card getCard() {
-        return card;
-    }
-
-    /**
-     * Sets the Card displayed in the panel. Updates the panel
-     *
-     * @param card Card object representing the card that is to be displayed
-     */
-    public void setCard(Card card) {
-        setCardType(card);
-        refreshImage();
     }
 
 }

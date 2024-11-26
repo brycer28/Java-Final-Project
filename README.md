@@ -32,7 +32,4 @@ Hand Values (ranked low-high):
 - Four of a Kind - four cards of the same value (ex. 3, 3, 3, 3)
 - Straight Flush - a straight of the same suit (ex. 4, 5, 6, 7, 8 all spades)
 - Royal Flush - a straight from ten to ace of the same suit (ex. 10, J, Q, K, A all diamonds)
-
-
-
-
+Game - Solitare - Travis Clark
