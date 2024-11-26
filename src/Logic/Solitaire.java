@@ -110,4 +110,5 @@ public class Solitaire {
             column.add(new ArrayList<>());
         }
     }
+
 }

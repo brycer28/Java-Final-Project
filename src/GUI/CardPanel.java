@@ -164,6 +164,25 @@ public class CardPanel extends JPanel {
         refreshImage();
     }
 
+    /**
+     * checks to see if given coordinates are in the panel
+     *
+     * @param x x coordinate to check
+     * @param y y coordinate to ckeck
+     *
+     * @return true if the x-y coordinates are in the panel
+     */
+    public boolean coordInPanel(int x, int y) {
+        if (x > getX()
+                && y > getY()
+                && x < getX() + getWidth()
+                && y < getY() + getHeight()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
