@@ -43,14 +43,12 @@ public class BlackjackPanel extends JPanel {
 
         // Hit button
         hitButton = new JButton("Hit");
-        hitButton.setForeground(Color.WHITE);
         hitButton.setBounds(50, 470, 100, 30);
         hitButton.addActionListener(e -> handleHit());
         this.add(hitButton);
 
         // Stand button
         standButton = new JButton("Stand");
-        standButton.setForeground(Color.WHITE);
         standButton.setBounds(160, 470, 100, 30);
         standButton.addActionListener(e -> handleStand());
         this.add(standButton);
