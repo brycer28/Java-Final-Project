@@ -13,23 +13,73 @@ public class Blackjack {
     private Deck deck;
     private List<Card> playerHand;
     private List<Card> dealerHand;
-    private boolean win; // If true, the player wins. If not, the dealer wins.
+    private String gameMessage = "Welcome to Blackjack!"; // Display string for BlackjackPanel; initialized with simple welcome message
+    private int playerValue;
+    private int dealerValue;
 
     public Blackjack() {
         deck = new Deck();
         playerHand = new ArrayList<>();
         dealerHand = new ArrayList<>();
+        startGame();
     }
 
-    public void startBlackjackGame() {
+    public void startGame() {
         // Both the dealer and player start the game with 2 cards
         playerHand.add(deck.pop());
         playerHand.add(deck.pop());
         dealerHand.add(deck.pop());
         dealerHand.add(deck.pop());
-
+        gameMessage = "Hit or Stand?";
     }
 
+    // Logic for the hit button
+    public void playerHit() {
+        playerHand.add(deck.pop());
+        if (calculateHandValue(playerHand) > 21) {
+            gameMessage = "Bust - dealer wins.";
+        } else {
+            gameMessage = "Hit or Stand?";
+        }
+    }
+
+    // Logic for the stand button
+    public void playerStand() {
+        // Dealer has to keep hitting until they either beat the player or bust
+        while (calculateHandValue(dealerHand) <= calculateHandValue(playerHand)) {
+            dealerHand.add(deck.pop());
+        }
+        determineWinner();
+    }
+
+    // Determines the winner of the game after the player chooses to stand
+    public void determineWinner() {
+        playerValue = calculateHandValue(playerHand);
+        dealerValue = calculateHandValue(dealerHand);
+
+        if (dealerValue > 21 || playerValue > dealerValue) {
+            gameMessage = "Player wins!";
+        } else {
+            gameMessage = "Dealer wins!";
+        }
+    }
+
+    // Getter for the player's hand
+    public List<Card> getPlayerHand() {
+        return playerHand;
+    }
+
+    // Getter for the dealer's hand
+    public List<Card> getDealerHand() {
+        return dealerHand;
+    }
+
+    // Getter for the game message
+    public String getGameMessage() {
+        return gameMessage;
+    }
+
+    // Calculates the value of a given hand
     private int calculateHandValue(List<Card> hand) {
         int value = 0;
         int aceCount = 0; // This will be used to help determine if the ace will count as 1 or 11
