@@ -58,15 +58,51 @@ public class BlackjackPanel extends JPanel {
     }
 
     private void handleHit() {
-        // code to handle hit button
+        game.playerHit();
+        updateDisplay(false);
+        if (game.isGameOver())
+            endGame();
     }
 
     private void handleStand() {
-        // code to handle stand button
+        game.playerStand();
+        updateDisplay(true);
+        endGame();
     }
 
     public void updateDisplay(boolean showDealerHand) {
-        // code to update display
+        // Update dealer's hand if showDealerHand is true
+        List<Card> dealerHand = game.getDealerHand();
+        if (showDealerHand) {
+            for (Card card : dealerHand) {
+                dealerPanel.add(new CardPanel(card));
+            }
+        } else {
+            // Shows the first 2 cards of the dealer hand but 2nd card is face down; standard in all casinos
+            dealerPanel.add(new CardPanel(dealerHand.getFirst()));
+            dealerPanel.add(new CardPanel(CardType.BACK));
+        }
+
+        // Update player's hand
+        List<Card> playerHand = game.getPlayerHand();
+        for (Card card : playerHand) {
+            playerPanel.add(new CardPanel(card));
+        }
+
+        // Update game message
+        messageLabel.setText(game.getGameMessage());
+
+        // Refresh panels
+        playerPanel.revalidate();
+        playerPanel.repaint();
+        dealerPanel.revalidate();
+        dealerPanel.repaint();
+    }
+
+    private void endGame() {
+        hitButton.setEnabled(false);
+        standButton.setEnabled(false);
+        messageLabel.setText(game.getGameMessage());
     }
 
 }

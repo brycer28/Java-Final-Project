@@ -16,6 +16,7 @@ public class Blackjack {
     private String gameMessage = "Welcome to Blackjack!"; // Display string for BlackjackPanel; initialized with simple welcome message
     private int playerValue;
     private int dealerValue;
+    private boolean gameOver = false;
 
     public Blackjack() {
         deck = new Deck();
@@ -38,6 +39,7 @@ public class Blackjack {
         playerHand.add(deck.pop());
         if (calculateHandValue(playerHand) > 21) {
             gameMessage = "Bust - dealer wins.";
+            gameOver = true;
         } else {
             gameMessage = "Hit or Stand?";
         }
@@ -62,6 +64,7 @@ public class Blackjack {
         } else {
             gameMessage = "Dealer wins!";
         }
+        gameOver = true;
     }
 
     // Getter for the player's hand
@@ -77,6 +80,11 @@ public class Blackjack {
     // Getter for the game message
     public String getGameMessage() {
         return gameMessage;
+    }
+
+    // Getter for game over boolean
+    public boolean isGameOver() {
+        return gameOver;
     }
 
     // Calculates the value of a given hand
