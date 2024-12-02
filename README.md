@@ -33,3 +33,7 @@ Hand Values (ranked low-high):
 - Straight Flush - a straight of the same suit (ex. 4, 5, 6, 7, 8 all spades)
 - Royal Flush - a straight from ten to ace of the same suit (ex. 10, J, Q, K, A all diamonds)
 Game - Solitare - Travis Clark
+
+Game 3 - Blackjack - Mason Simpson
+
+The objective of blackjack is to beat the dealer; you aren't competing with anybody else sitting at the table, just the dealer. The game itself is very simple; you want your hand to be closer to 21 than the dealer's hand without exceeding 21. Each card has a point value: numbered cards are worth their face value, face cards (jack, queen, king) are worth 10 points, and an ace is worth either 1 point or 11 points depending on which one meets your goals the most. The game begins with the player and dealer receiving 2 cards. The player can then choose to "hit" (take another card), or "stand" (keep their current hand). If either the player or dealer decides to "hit" and then the added card exceeds 21, they "bust" and the other person wins. If neither the player or dealer bust, the hand closest to 21 wins.
