@@ -32,12 +32,16 @@ public class Blackjack {
         dealerHand.add(deck.pop());
         dealerHand.add(deck.pop());
         gameMessage = "Hit or Stand?";
+        System.out.println(playerHand);
+        System.out.println(dealerHand);
     }
 
     // Logic for the hit button
     public void playerHit() {
         playerHand.add(deck.pop());
-        if (calculateHandValue(playerHand) > 21) {
+        System.out.println(playerHand);
+        playerValue = calculateHandValue(playerHand);
+        if (playerValue > 21) {
             gameMessage = "Bust - dealer wins.";
             gameOver = true;
         } else {
@@ -58,6 +62,8 @@ public class Blackjack {
     public void determineWinner() {
         playerValue = calculateHandValue(playerHand);
         dealerValue = calculateHandValue(dealerHand);
+        System.out.println(playerHand);
+        System.out.println(dealerHand);
 
         if (dealerValue > 21 || playerValue > dealerValue) {
             gameMessage = "Player wins!";
@@ -87,6 +93,15 @@ public class Blackjack {
         return gameOver;
     }
 
+    // Getter for player hand value
+    public int getPlayerValue() {
+        return playerValue;
+    }
+
+    // Getter for dealer hand value
+    public int getDealerValue() {
+        return dealerValue;
+    }
     // Calculates the value of a given hand
     private int calculateHandValue(List<Card> hand) {
         int value = 0;
