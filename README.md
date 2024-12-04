@@ -37,3 +37,14 @@ Game - Solitare - Travis Clark
 Game 3 - Blackjack - Mason Simpson
 
 The objective of blackjack is to beat the dealer; you aren't competing with anybody else sitting at the table, just the dealer. The game itself is very simple; you want your hand to be closer to 21 than the dealer's hand without exceeding 21. Each card has a point value: numbered cards are worth their face value, face cards (jack, queen, king) are worth 10 points, and an ace is worth either 1 point or 11 points depending on which one meets your goals the most. The game begins with the player and dealer receiving 2 cards. The player can then choose to "hit" (take another card), or "stand" (keep their current hand). Whenever the player stands, the dealer with then keep hitting until they either win or bust.
+
+Game 4 - Crazy Eights - Logan Flora
+ Kind of like uno with playing cards, where you play with a computer taking turns placing cards from your hand to the playing deck, only if its the same suit or number as the card faced up
+- Player and AI start with 7 cards, 2 play game
+- Player first, pick a card that matches either suit or number to the face up card, pulling 1 card from the deck in unable
+- Computer's Turn, they will do the same
+-     Computer choses first match in ArrayList
+-     Computer choses Crazy 8 suit randomly
+- U can also place an 8 of the same suit, changing the suit to what you like, allowing for the next player to pick any number of that suit
+- Winner is the first to empty their hand
+- If deck is all in hands of player/dealer, winner is one with the least amount of cards (Very Unlikely in this version of the game)
