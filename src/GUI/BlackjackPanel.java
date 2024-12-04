@@ -103,8 +103,7 @@ public class BlackjackPanel extends JPanel {
         List<Card> dealerHand = game.getDealerHand();
         if (showDealerHand) {
             for (Card card : dealerHand) {
-                CardPanel cardToAdd = new CardPanel(card);
-                cardToAdd.setImageWidth(CARD_WIDTH);
+                CardPanel cardToAdd = new CardPanel(card, CARD_WIDTH);
                 if(!card.isFaceUp())
                     cardToAdd.flipCard();
                 dealerPanel.add(cardToAdd);
@@ -112,11 +111,9 @@ public class BlackjackPanel extends JPanel {
             dealerValueLabel.setText("Dealer Value: " + game.getDealerValue());
         } else {
             // Shows the first 2 cards of the dealer hand but 2nd card is face down; standard in all casinos
-            CardPanel cardToAdd = new CardPanel(dealerHand.getFirst());
-            cardToAdd.setImageWidth(CARD_WIDTH);
+            CardPanel cardToAdd = new CardPanel(dealerHand.getFirst(), CARD_WIDTH);
             dealerPanel.add(cardToAdd);
-            cardToAdd = new CardPanel(CardType.BACK);
-            cardToAdd.setImageWidth(CARD_WIDTH);
+            cardToAdd = new CardPanel(CardType.BACK, CARD_WIDTH);
             dealerPanel.add(cardToAdd);
             dealerValueLabel.setText("Dealer Value: ?");
         }
@@ -128,8 +125,7 @@ public class BlackjackPanel extends JPanel {
         // Update player's hand
         List<Card> playerHand = game.getPlayerHand();
         for (Card card : playerHand) {
-            CardPanel cardToAdd = new CardPanel(card);
-            cardToAdd.setImageWidth(CARD_WIDTH);
+            CardPanel cardToAdd = new CardPanel(card, CARD_WIDTH);
             if(!card.isFaceUp())
                 cardToAdd.flipCard();
             playerPanel.add(cardToAdd);
