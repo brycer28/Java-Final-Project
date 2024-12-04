@@ -17,6 +17,7 @@ public class BlackjackPanel extends JPanel {
     private JLabel messageLabel;
     private JButton hitButton;
     private JButton standButton;
+    private JButton playAgain;
     private final int CARD_WIDTH = 130;
 
     public BlackjackPanel(Blackjack game) {
@@ -50,6 +51,13 @@ public class BlackjackPanel extends JPanel {
         standButton.addActionListener(e -> handleStand());
         topPanel.add(standButton);
 
+        // Play again button
+        playAgain = new JButton("Play Again");
+        playAgain.setSize(100,30);
+        playAgain.setVisible(false);
+        playAgain.addActionListener(e -> resetGame());
+        topPanel.add(playAgain);
+
         // Dealer panel
         dealerPanel = new JPanel();
         dealerPanel.setLayout(new FlowLayout(FlowLayout.LEFT,5,5));
@@ -71,7 +79,7 @@ public class BlackjackPanel extends JPanel {
         this.add(playerPanel);
 
         // Player value label
-        playerValueLabel = new JLabel("Player Value: 0");
+        playerValueLabel = new JLabel("Player Value: " + game.getPlayerValue());
         playerValueLabel.setForeground(Color.white);
         playerValueLabel.setBounds(60,570,100,20);
         this.add(playerValueLabel);
@@ -145,7 +153,21 @@ public class BlackjackPanel extends JPanel {
     private void endGame() {
         hitButton.setEnabled(false);
         standButton.setEnabled(false);
+        playAgain.setVisible(true);
         messageLabel.setText(game.getGameMessage());
+    }
+
+    private void resetGame() {
+        // Reset game logic
+        game.reset();
+        updatePlayerPanel();
+        updateDealerPanel(false);
+
+        // Re-enable buttons
+        hitButton.setEnabled(true);
+        standButton.setEnabled(true);
+        playAgain.setVisible(false);
+
     }
 
 }

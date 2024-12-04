@@ -29,17 +29,15 @@ public class Blackjack {
         // Both the dealer and player start the game with 2 cards
         playerHand.add(deck.pop());
         playerHand.add(deck.pop());
+        playerValue = calculateHandValue(playerHand);
         dealerHand.add(deck.pop());
         dealerHand.add(deck.pop());
         gameMessage = "Hit or Stand?";
-        System.out.println(playerHand);
-        System.out.println(dealerHand);
     }
 
     // Logic for the hit button
     public void playerHit() {
         playerHand.add(deck.pop());
-        System.out.println(playerHand);
         playerValue = calculateHandValue(playerHand);
         if (playerValue > 21) {
             gameMessage = "Bust - dealer wins.";
@@ -62,8 +60,6 @@ public class Blackjack {
     public void determineWinner() {
         playerValue = calculateHandValue(playerHand);
         dealerValue = calculateHandValue(dealerHand);
-        System.out.println(playerHand);
-        System.out.println(dealerHand);
 
         if (dealerValue > 21 || playerValue > dealerValue) {
             gameMessage = "Player wins!";
@@ -132,5 +128,27 @@ public class Blackjack {
         }
         return value;
     }
+
+    // Resets the game if player hits the play again button
+    public void reset() {
+        // Reinitialize the deck
+        deck = new Deck();
+
+        // Clear and reset the player and dealer hands
+        playerHand.clear();
+        dealerHand.clear();
+
+        // Reset player and dealer values
+        playerValue = 0;
+        dealerValue = 0;
+
+        // Reset game message and game state
+        gameMessage = "Welcome to Blackjack!";
+        gameOver = false;
+
+        // Start a new game
+        startGame();
+    }
+
 
 }
