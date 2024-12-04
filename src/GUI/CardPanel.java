@@ -79,6 +79,29 @@ public class CardPanel extends JPanel {
     /**
      * Constructor that displays a card of the given Card
      *
+     * @param type  the card that will be displayed
+     * @param width the width the card will be
+     */
+    public CardPanel(Card card, int width) {
+        this(card);
+        setImageWidth(width);
+
+    }
+
+    /**
+     * Constructor that displays a card of the given CardType
+     *
+     * @param type  the card type that will be displayed
+     * @param width the width the card will be
+     */
+    public CardPanel(CardType type, int width) {
+        this(type);
+        setImageWidth(width);
+    }
+
+    /**
+     * Constructor that displays a card of the given Card
+     *
      * @param type the card that will be displayed
      */
     public CardPanel(Card card) {
@@ -374,7 +397,7 @@ public class CardPanel extends JPanel {
         int x = 0;
         int y = 50;
         for (CardType type : CardType.values()) {
-            var c1 = new CardPanel(type);
+            var c1 = new CardPanel(type, 100);
             c1.setRotation(45);
             panel.add(c1);
             c1.setLocation(x, y);
