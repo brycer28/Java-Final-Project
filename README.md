@@ -47,4 +47,4 @@ Game 4 - Crazy Eights - Logan Flora
 -     Computer choses Crazy 8 suit randomly
 - U can also place an 8 of the same suit, changing the suit to what you like, allowing for the next player to pick any number of that suit
 - Winner is the first to empty their hand
-- If deck is all in hands of player/dealer, winner is one with the least amount of cards (Very Unlikely in this version of the game)
+- If deck is all in hands of player/dealer, winner is one with the least amount of cards (Very Unlikely in this version of the game) 
