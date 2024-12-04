@@ -14,7 +14,7 @@ public class BlackjackTestDriver {
 
         JFrame frame = new JFrame("Blackjack Test");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1200,1000);
+        frame.setSize(1500,1000);
         frame.add(panel);
         frame.setVisible(true);
     }
