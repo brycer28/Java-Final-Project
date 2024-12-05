@@ -19,6 +19,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     final int WIDTH = 150;
     Solitaire logic;
     ArrayList<CardPanel> movableCards;
+    ArrayList<CardPanel> deck;
     CardPanel clickedCard;
     int clickOffsetX = 0, clickOffsetY = 0;
     int returnX = 0, returnY = 0;
@@ -105,12 +106,13 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     }
 
     /**
-     * Ititializes the deck and displays
+     * Initializes the deck and displays
      */
     private void initDeck() {
 
         deckPanel = new CardPanel(CardType.BACK, WIDTH);
         deckPanel.setLocation(new Point(deckX, deckY));
+        deck = new ArrayList<>();
 
         addPanel(deckPanel);
     }
@@ -119,22 +121,63 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
      * Checks if the deck is clicked
      * If yes, does deck action
      */
-    private void isDeckCoord(int x, int y) {
+    private boolean isDeckCoord(int x, int y) {
         if (x > deckPanel.getX()
                 && y > deckPanel.getY()
                 && x < deckPanel.getX() + deckPanel.getWidth()
                 && y < deckPanel.getY() + deckPanel.getHeight()) {
-            Card next = logic.flipTopCard();
-            System.out.println(next);
-            if (next == null) {
-                return;
-            }
-
-            var nextCard = new CardPanel(next, WIDTH);
-            nextCard.setLocation(new Point(drawX, drawY));
-            addMovableCard(nextCard);
-            repaint();
+            return true;
+        } else {
+            return false;
         }
+    }
+
+    /**
+     * removes the displayed cards beside the deck
+     */
+    private void clearDeck() {
+        for (CardPanel panel : deck) {
+            movableCards.remove(panel);
+            this.remove(panel);
+        }
+        deck.clear();
+        repaint();
+    }
+
+    /**
+     * Displays the next card in the deck
+     */
+    private void showNextCard() {
+
+        System.out.println("deck index = " + logic.getDeckIndex());
+        logic.printDeck();
+
+        // hides the deck card if the deck is empty or all cards are displayed
+        if (logic.getDeckIndex() == logic.getDeckSize() - 1) {
+            deckPanel.setVisible(false);
+        } else if (!deckPanel.isVisible() && logic.getDeckSize() != 0) {
+            // sets the deck card to visible and clears the displayed cards
+            // early return to not iterate the card once
+            deckPanel.setVisible(true);
+            clearDeck();
+            return;
+        }
+
+        Card next = logic.flipTopCard();
+        if (next == null) {
+            return;
+        }
+
+        if (next.isFaceUp()) {
+            next.toggleFaceUp();
+        }
+        var nextCard = new CardPanel(next, WIDTH);
+        nextCard.setLocation(new Point(drawX, drawY));
+        addMovableCard(nextCard);
+        deck.add(nextCard);
+
+        repaint();
+
     }
 
     private void addMovableCard(CardPanel cardPanel) {
@@ -187,13 +230,16 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
 
     @Override
     public void mouseClicked(MouseEvent event) {
-        isDeckCoord(event.getX(), event.getY());
+        if (isDeckCoord(event.getX(), event.getY())) {
+            showNextCard();
+        }
     }
 
     @Override
     public void mousePressed(MouseEvent event) {
         clickedCard = isMovableCardCoord(event.getX(), event.getY());
         if (clickedCard != null) {
+            System.out.println(clickedCard.getCard());
             returnX = clickedCard.getX();
             returnY = clickedCard.getY();
             clickOffsetX = clickedCard.getX() - event.getX();
@@ -211,6 +257,8 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         }
         Point point = inPosition(event.getX(), event.getY());
         if (!snapBack) {
+            logic.removeDisplayedCard();
+            deck.remove(clickedCard);
             int num = idColumn(returnX + 1, returnY + 1);
             if (num != -1) {
                 columnCoord.set(num,
@@ -256,6 +304,8 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
                 return foundationCoord.get(index);
             }
         }
+
+        // sets snapBack if the card will be returning to the original location
         snapBack = true;
         return new Point(returnX, returnY);
     }

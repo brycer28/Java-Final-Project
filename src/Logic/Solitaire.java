@@ -6,7 +6,7 @@ public class Solitaire {
     Deck deck;
     ArrayList<ArrayList<Card>> foundation;
     ArrayList<ArrayList<Card>> column;
-    int deckIndex = 0; // index number for the currently displayed card, -1 if none
+    int deckIndex = 50; // index number for the currently displayed card, -1 if none
 
     public Solitaire() {
         deck = new Deck();
@@ -139,22 +139,43 @@ public class Solitaire {
     }
 
     /**
-     * Revoves the card that was most recently fliped
+     * Revoves the card that was most recently flipped
      */
     public Card removeDisplayedCard() {
-        if (deckIndex == -1) {
+        int cardIndex = deckIndex - 1;
+        if (deck.size() == 0) {
             System.out.println("Error getting card, deck is empty");
             return null;
         }
-        System.out.println("deck index is " + deckIndex);
-        Card card = deck.get(deckIndex);
-        deck.remove(deckIndex);
-        deckIndex += 1;
+        if (cardIndex == -1) {
+            cardIndex = deck.size() - 1;
+        }
+        Card card = deck.get(cardIndex);
+        System.out.println("removing " + card + " from index: " + cardIndex);
+        deck.remove(cardIndex);
+        if (deckIndex != 0) {
+            deckIndex -= 1;
+        }
         if (deckIndex >= deck.size()) {
             deckIndex = 0;
         }
         return card;
 
+    }
+
+    /**
+     * prints the entire deck to the console
+     */
+    public void printDeck() {
+        int i = 0;
+        for (Card card : deck) {
+            if (i % 7 == 0 && i != 0)
+                System.out.println(i + ": " + card);
+            else
+                System.out.print("\t" + i + ": " + card);
+            i++;
+        }
+        System.out.println();
     }
 
     /**
@@ -184,7 +205,6 @@ public class Solitaire {
         if (deck.size() < 1) {
             System.out.println("Error getting card, deck is empty");
         }
-        System.out.println("deck index is " + deckIndex);
         Card card = deck.get(deckIndex);
         deckIndex += 1;
         if (deckIndex >= deck.size()) {
@@ -215,6 +235,13 @@ public class Solitaire {
         for (int i = 0; i < 7; i++) {
             column.add(new ArrayList<>());
         }
+    }
+
+    /**
+     * Gets the number of cards left in the deck
+     */
+    public int getDeckSize() {
+        return deck.size();
     }
 
 }
