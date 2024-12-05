@@ -16,6 +16,36 @@ public class Solitaire {
     }
 
     /**
+     * Checks to see if a card can be added to the foundation. If it can, the
+     * card is added and true is returned. If it cannot, the card is not added
+     * and false is returned
+     */
+    public boolean addToFoundation(int foundationNum, Card card) {
+        // if the foundation is empty, check if card is A and add if true
+        if (foundation.get(foundationNum).size() == 0) {
+            if (card.getRank() == Card.Rank.ACE) {
+                foundation.get(foundationNum).add(card);
+                return true;
+            } else {
+                return false;
+            }
+        }
+        // checks if the card is the same suit
+        if (isOppositeSuit(card, foundation.get(foundationNum).getLast())) {
+            return false;
+        }
+
+        // checks if the card is the next largest number
+        if (isNextLowestCard(card, foundation.get(foundationNum).getLast())) {
+            foundation.get(foundationNum).add(card);
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    /**
      * Checks to see if a card can be added to a column. If it can, the card
      * is added and true is returned. If it cannot, the card is not added and
      * false if returned
@@ -26,7 +56,7 @@ public class Solitaire {
             column.get(columnNum).add(card);
             return true;
         }
-        // checks of the card is the oppisite suit and return false if not
+        // checks of the card is the opposite suit and return false if not
         if (!isOppositeSuit(column.get(columnNum).getLast(), card)) {
             return false;
         }

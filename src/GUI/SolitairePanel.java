@@ -234,7 +234,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     }
 
     /**
-     * Checks if the given coord is in a location that a card can go
+     * Checks if the given coordinates is in a location that a card can go
      */
     private Point inPosition(int x, int y) {
         snapBack = false;
@@ -250,9 +250,11 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         // checks if in foundation
         index = idFoundation(x, y);
         if (index != -1) {
-            Point point = foundationCoord.get(index);
-            foundationCoord.set(index, new Point((int) point.getX(), (int) point.getY()));
-            return foundationCoord.get(index);
+            if (logic.addToFoundation(index, clickedCard.getCard())) {
+                Point point = foundationCoord.get(index);
+                foundationCoord.set(index, new Point((int) point.getX(), (int) point.getY()));
+                return foundationCoord.get(index);
+            }
         }
         snapBack = true;
         return new Point(returnX, returnY);
