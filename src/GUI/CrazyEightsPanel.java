@@ -20,7 +20,6 @@ public class CrazyEightsPanel extends JPanel {
     private final JButton[] suitButtons;
     private final JLabel gameMessageLabel;
 
-
     public CrazyEightsPanel() {
         gameLogic = new CrazyEights();
         playerCardsPanels = new ArrayList<>();
