@@ -44,7 +44,7 @@ public class CrazyEightsPanel extends JPanel {
                 gameLogic.drawCard();
                 updateCardPanels();
                 //To Ensure it is Clickable, listener called on panel
-                addCardPanelMouseListener(playerCardsPanels.size()-1);
+                //addCardPanelMouseListener(playerCardsPanels.size());
             }
         });
 
