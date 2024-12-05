@@ -16,12 +16,13 @@ import java.util.Arrays;
 import javax.swing.*;
 
 public class SolitairePanel extends JPanel implements MouseListener, MouseMotionListener {
+    final int WIDTH = 150;
     Solitaire logic;
     ArrayList<CardPanel> movableCards;
     CardPanel clickedCard;
     int clickOffsetX = 0, clickOffsetY = 0;
     int returnX = 0, returnY = 0;
-    CardPanel deckPanel = new CardPanel(CardType.BACK);
+    CardPanel deckPanel = new CardPanel(CardType.BACK, 100);
     final int drawX = 250, drawY = 10, deckX = 10, deckY = 10;
     ArrayList<Point> foundationCoord;
     ArrayList<Point> columnCoord;
@@ -74,11 +75,11 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
 
             // adds placeholders
             var panel = new JPanel();
-            panel.setSize(new Dimension(200, 280));
+            panel.setSize(new Dimension(deckPanel.getWidth(), deckPanel.getHeight()));
             panel.setBackground(Color.green);
             panel.setLocation(x, y);
             background.add(panel);
-            x += 210;
+            x += deckPanel.getWidth() + 10;
         }
 
     }
@@ -94,11 +95,11 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
 
             // adds placeholders
             var panel = new JPanel();
-            panel.setSize(new Dimension(200, 280));
+            panel.setSize(new Dimension(deckPanel.getWidth(), deckPanel.getHeight()));
             panel.setBackground(Color.green);
             panel.setLocation(x, y);
             background.add(panel);
-            x += 210;
+            x += deckPanel.getWidth() + 10;
         }
 
     }
@@ -108,7 +109,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
      */
     private void initDeck() {
 
-        deckPanel = new CardPanel(CardType.BACK);
+        deckPanel = new CardPanel(CardType.BACK, WIDTH);
         deckPanel.setLocation(new Point(deckX, deckY));
 
         addPanel(deckPanel);
@@ -129,7 +130,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
                 return;
             }
 
-            var nextCard = new CardPanel(next);
+            var nextCard = new CardPanel(next, WIDTH);
             nextCard.setLocation(new Point(drawX, drawY));
             addMovableCard(nextCard);
             repaint();
@@ -237,13 +238,14 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
      */
     private Point inPosition(int x, int y) {
         snapBack = false;
-        CardPanel panel;
         // checks if in columns
         int index = idColumn(x, y);
         if (index != -1) {
-            Point point = columnCoord.get(index);
-            columnCoord.set(index, new Point((int) point.getX(), (int) point.getY() + 40));
-            return columnCoord.get(index);
+            if (logic.addToColumn(index, clickedCard.getCard())) {
+                Point point = columnCoord.get(index);
+                columnCoord.set(index, new Point((int) point.getX(), (int) point.getY() + 40));
+                return columnCoord.get(index);
+            }
         }
         // checks if in foundation
         index = idFoundation(x, y);

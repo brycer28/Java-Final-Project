@@ -16,6 +16,82 @@ public class Solitaire {
     }
 
     /**
+     * Checks to see if a card can be added to a column. If it can, the card
+     * is added and true is returned. If it cannot, the card is not added and
+     * false if returned
+     */
+    public boolean addToColumn(int columnNum, Card card) {
+        // first checks if the column is empty and if so adds the card
+        if (column.get(columnNum).size() == 0) {
+            column.get(columnNum).add(card);
+            return true;
+        }
+        // checks of the card is the oppisite suit and return false if not
+        if (!isOppositeSuit(column.get(columnNum).getLast(), card)) {
+            return false;
+        }
+
+        // checks if the card is the next lowest card and returns ture if yes
+        if (isNextLowestCard(column.get(columnNum).getLast(), card)) {
+            column.get(columnNum).add(card);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Checks if the new card is the next lowest numbered card after the
+     * column card
+     */
+    private boolean isNextLowestCard(Card columnCard, Card newCard) {
+        Card.Rank lower_rank = switch (columnCard.getRank()) {
+            case Card.Rank.ACE -> null;
+            case Card.Rank.TWO -> Card.Rank.ACE;
+            case Card.Rank.THREE -> Card.Rank.TWO;
+            case Card.Rank.FOUR -> Card.Rank.THREE;
+            case Card.Rank.FIVE -> Card.Rank.FOUR;
+            case Card.Rank.SIX -> Card.Rank.FIVE;
+            case Card.Rank.SEVEN -> Card.Rank.SIX;
+            case Card.Rank.EIGHT -> Card.Rank.SEVEN;
+            case Card.Rank.NINE -> Card.Rank.EIGHT;
+            case Card.Rank.TEN -> Card.Rank.NINE;
+            case Card.Rank.JACK -> Card.Rank.TEN;
+            case Card.Rank.QUEEN -> Card.Rank.JACK;
+            case Card.Rank.KING -> Card.Rank.QUEEN;
+        };
+
+        if (newCard.getRank() != lower_rank) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Checks to see if a card is cab be appended to a column
+     */
+    private boolean isOppositeSuit(Card columnCard, Card newCard) {
+        if (isRedSuit(columnCard)) {
+            return !isRedSuit(newCard);
+        } else {
+            return isRedSuit(newCard);
+        }
+    }
+
+    /**
+     * helper function to check if red suit
+     */
+    private boolean isRedSuit(Card card) {
+        if (card.getSuit() == Card.Suit.HEARTS
+                || card.getSuit() == Card.Suit.DIAMONDS) {
+            return true;
+        } else
+            return false;
+
+    }
+
+    /**
      * Gets the current top of the deck without incrementing deck
      */
     public Card peekTopCard() {
