@@ -6,9 +6,9 @@ import java.util.Collections;
 public class CrazyEights {
 
     private Deck deck;
-    private ArrayList<Card> dealerHand;
-    private ArrayList<Card> playerHand;
-    private ArrayList<Card> discardPile;
+    private final ArrayList<Card> dealerHand;
+    private final ArrayList<Card> playerHand;
+    private final ArrayList<Card> discardPile;
     //This is needed for the crazy 8 aspect of the game
     private Card.Suit currentSuit;
     private boolean playerTurnFlag;
@@ -42,7 +42,7 @@ public class CrazyEights {
     }
 
     //Logic for when a card is clicked to play
-    public boolean playCard(Card card, Card.Suit chosenSuit) {
+    public void playCard(Card card, Card.Suit chosenSuit) {
         if(isValidMove(card)) {
             playerHand.remove(card);
             discardPile.add(card);
@@ -67,10 +67,8 @@ public class CrazyEights {
                 dealerTurn();
             }
 
-            return true;
         } else {
             gameMessage = "Invalid Move! Try Again.";
-            return false;
         }
     }
 
@@ -187,7 +185,7 @@ public class CrazyEights {
     }
 
     public boolean isGameOver() {
-        return gameOverFlag;
+        return !gameOverFlag;
     }
 
     // Reset method (You'll likely need this for your GUI)

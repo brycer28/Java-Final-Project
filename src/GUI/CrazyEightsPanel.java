@@ -12,20 +12,18 @@ import java.util.ArrayList;
 
 public class CrazyEightsPanel extends JPanel {
 
-    private CrazyEights gameLogic;
-    private ArrayList<CardPanel> plauerCardsPanels;
-    private ArrayList<CardPanel> dealerCardsPanels;
+    private final CrazyEights gameLogic;
+    private final ArrayList<CardPanel> playerCardsPanels;
+    private final ArrayList<CardPanel> dealerCardsPanels;
     private CardPanel playedPilePanel;
-    private JButton resetButton;
     //For when an 8 is played
-    private JButton[] suitButtons;
-    private JButton drawButton;
-    private JLabel gameMessageLabel;
+    private final JButton[] suitButtons;
+    private final JLabel gameMessageLabel;
 
 
     public CrazyEightsPanel() {
         gameLogic = new CrazyEights();
-        plauerCardsPanels = new ArrayList<>();
+        playerCardsPanels = new ArrayList<>();
         dealerCardsPanels = new ArrayList<>();
 
         setLayout(null);
@@ -37,17 +35,17 @@ public class CrazyEightsPanel extends JPanel {
         add(playedPilePanel);
 
         //Draw Button
-        drawButton = new JButton("Draw Card");
+        JButton drawButton = new JButton("Draw Card");
         add(drawButton);
 
         //Draw Button Action Listener
         drawButton.addActionListener(e -> {
             //Calls draw method to draw a new card''
-            if (gameLogic.isPlayerTurn() && !gameLogic.isGameOver()){
+            if (gameLogic.isPlayerTurn() && gameLogic.isGameOver()){
                 gameLogic.drawCard();
                 updateCardPanels();
                 //To Ensure it is Clickable, listener called on panel
-                addCardPanelMouseListener(plauerCardsPanels.size()-1);
+                addCardPanelMouseListener(playerCardsPanels.size()-1);
             }
         });
 
@@ -93,9 +91,9 @@ public class CrazyEightsPanel extends JPanel {
     //Handles the dealers turn updates as well
     private void updateCardPanels() {
         //Reset Panels
-        plauerCardsPanels.forEach(this::remove);
+        playerCardsPanels.forEach(this::remove);
         dealerCardsPanels.forEach(this::remove);
-        plauerCardsPanels.clear();
+        playerCardsPanels.clear();
         dealerCardsPanels.clear();
 
         //Add Player GUI Cards
@@ -105,7 +103,7 @@ public class CrazyEightsPanel extends JPanel {
             Card card = gameLogic.getPlayerHand().get(i);
             CardPanel cardPanel = new CardPanel(card, 80);
             cardPanel.getCard().toggleFaceUp();
-            plauerCardsPanels.add(cardPanel);
+            playerCardsPanels.add(cardPanel);
             add(cardPanel);
             cardPanel.setBounds(x, y, cardPanel.getWidth(), cardPanel.getHeight());
             x += 90;
@@ -140,12 +138,12 @@ public class CrazyEightsPanel extends JPanel {
 
     //This method puts mouse listeners on the card panels to be played by user by clicking them
     private void addCardPanelMouseListener(int index) {
-        if(index >= 0 && index < plauerCardsPanels.size()) {
-            plauerCardsPanels.get(index).addMouseListener(new MouseAdapter() {
+        if(index >= 0 && index < playerCardsPanels.size()) {
+            playerCardsPanels.get(index).addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     //Basic Game Checks
-                    if (gameLogic.isPlayerTurn() && !gameLogic.isGameOver()) {
+                    if (gameLogic.isPlayerTurn() && gameLogic.isGameOver()) {
                         Card selectedCard = gameLogic.getPlayerHand().get(index);
 
                         //For Crazy 8 Instances (Makes Buttons Visible)
