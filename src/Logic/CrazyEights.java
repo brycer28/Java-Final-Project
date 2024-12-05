@@ -45,13 +45,16 @@ public class CrazyEights {
     public boolean playCard(Card card, Card.Suit chosenSuit) {
         if(isValidMove(card)) {
             playerHand.remove(card);
-            dealerHand.add(card);
+            discardPile.add(card);
 
             //Special Card Handling
             if(card.getRank() == Card.Rank.EIGHT) {
                 //This section allows user to pick suit
                 currentSuit = chosenSuit;
                 gameMessage = "You played an Eight!! Current Suit is Still " + currentSuit + ".";
+            } else {
+                currentSuit = card.getSuit();
+                gameMessage = "You played " + card + "!";
             }
 
             //Check if Player Won
@@ -63,6 +66,7 @@ public class CrazyEights {
                 //Passes to Computer Dealer If Not
                 dealerTurn();
             }
+
             return true;
         } else {
             gameMessage = "Invalid Move! Try Again.";
@@ -80,6 +84,8 @@ public class CrazyEights {
             if (!deck.isEmpty()) {
                 playerHand.add(deck.pop());
                 gameMessage = "You Drew a Card. Dealer's Turn.";
+                playerTurnFlag = false;
+                dealerTurn();
             }
         }
     }
@@ -131,9 +137,10 @@ public class CrazyEights {
     //Checks to see if a card is valid to be placed
     //Aka same suit or number, or an 8
     private boolean isValidMove(Card card) {
+        Card topCard = discardPile.getLast();
         return card.getRank() == Card.Rank.EIGHT ||
                 card.getSuit() == currentSuit ||
-                card.getRank() == discardPile.getFirst().getRank();
+                card.getRank() == topCard.getRank();
     }
 
     //Reshuffle for when deck is exhausted
