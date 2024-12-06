@@ -1,6 +1,7 @@
 package Logic;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Solitaire {
     Deck deck;
@@ -16,11 +17,55 @@ public class Solitaire {
     }
 
     /**
+     * Returns the Cards in the column
+     */
+    public ArrayList<Card> getColumn(int columnNum) {
+        return column.get(columnNum);
+    }
+
+    /**
+     * Moves a card from one column to another. If there are cards connected
+     * then it moves those cards as well. Returns true if the cards were
+     * moved
+     */
+    public boolean moveCardToColumn(int origColumn, int newColumn, Card card) {
+        // checks if the card is in the original column
+        // & tries to add the card to the new column
+        if (!column.get(origColumn).contains(card) || !addToColumn(newColumn, card)) {
+            return false;
+        }
+
+        // adds the remaining cards to the new stack
+        int loopSize = column.get(origColumn).size();
+        boolean pastCard = false;
+        Iterator<Card> it = column.get(origColumn).iterator();
+        while (it.hasNext()) {
+            Card c = it.next();
+            // if the current card is the card that is moving, remove the card
+            if (c == card) {
+                pastCard = true;
+                it.remove();
+                continue;
+            }
+
+            if (pastCard) {
+                column.get(newColumn).add(c);
+                it.remove();
+            }
+        }
+        return true;
+    }
+
+    /**
      * Checks to see if a card can be added to the foundation. If it can, the
      * card is added and true is returned. If it cannot, the card is not added
      * and false is returned
      */
-    public boolean addToFoundation(int foundationNum, Card card) {
+    public boolean addToFoundation(int foundationNum, int columnNum, Card card) {
+        // check if the card is the top of the columns stack
+        if (columnNum != -1 && column.get(columnNum).getLast() != card) {
+            return false;
+        }
         // if the foundation is empty, check if card is A and add if true
         if (foundation.get(foundationNum).size() == 0) {
             if (card.getRank() == Card.Rank.ACE) {
@@ -43,6 +88,34 @@ public class Solitaire {
             return false;
         }
 
+    }
+
+    /**
+     * Checks to see if a card stack can be added to a column. If it can, the
+     * stack is added and true is returned. If it cannot, the stack is not added and
+     * false if returned.
+     * The first card in the ArrayList must higher order card
+     */
+    public boolean addToColumn(int columnNum, ArrayList<Card> cardStack) {
+        Card topCard = cardStack.getFirst();
+        // first checks if the column is empty and if so adds the card
+        if (column.get(columnNum).size() != 0) {
+            // checks of the card is the opposite suit and return false if not
+            if (!isOppositeSuit(column.get(columnNum).getLast(), topCard)) {
+                return false;
+            }
+
+            // checks if the card is the next lowest card and returns true if yes
+            if (!isNextLowestCard(column.get(columnNum).getLast(), topCard)) {
+                return false;
+            }
+        }
+
+        // adds the stack of cards
+        for (Card card : cardStack) {
+            column.get(columnNum).add(card);
+        }
+        return true;
     }
 
     /**
