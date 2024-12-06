@@ -7,7 +7,6 @@ import Logic.Card.*;
 
 
 public class Hand extends ArrayList<Card> {
-    private HandRanks rank;
 
     public enum HandRanks {
         HI_CARD, PAIR, TWO_PAIR, THREE_OF_A_KIND,
@@ -19,21 +18,62 @@ public class Hand extends ArrayList<Card> {
         super();
     }
 
-    // ex Hand - 5S, 5C, 8D, 8C, 8S
+    public HandRanks evaluateHand(Hand hand) {
+        // check that hand is not null or empty
+        if (hand == null || hand.isEmpty()) {
+            throw new IllegalArgumentException("Hand is null or empty");
+        }
 
-    public int evaluateHand() {
-        // using helper methods (ex. isRoyalFlush), check hand and return ordinal value of HandRank enum
-        return 0;
+        // using helper methods (ex. isRoyalFlush), check hand and return respective HandRank
+        if (isRoyalFlush(hand)) {
+            return HandRanks.ROYAL_FLUSH;
+        } else if (isStraightFlush(hand)) {
+            return HandRanks.STRAIGHT_FLUSH;
+        } else if (isFourOfAKind(hand)) {
+            return HandRanks.FOUR_OF_A_KIND;
+        } else if (isFullHouse(hand)) {
+            return HandRanks.FULL_HOUSE;
+        } else if (isFlush(hand)) {
+            return HandRanks.FLUSH;
+        } else if (isStraight(hand)) {
+            return HandRanks.STRAIGHT;
+        } else if (isThreeOfAKind(hand)) {
+            return HandRanks.THREE_OF_A_KIND;
+        } else if (isTwoPair(hand)) {
+            return HandRanks.TWO_PAIR;
+        } else if (isPair(hand)) {
+            return HandRanks.PAIR;
+        } else {
+            return HandRanks.HI_CARD;
+        }
     }
 
-    public void isRoyalFlush(Hand hand) {
-        // same concept as straight flush except added constraint of containing 10,J,Q,K,Ajhunnnnnnnn
+    public static boolean isRoyalFlush(Hand hand) {
+        // same concept as straight flush except added constraint of containing 10,J,Q,K,A
+        if (!isStraightFlush(hand)) {
+            return false;
+        }
+
+        // get the suit that makes the flush
+        Suit flushSuit = Suit.values()[getFlushSuit(hand)];
+
+        // create a smaller set of cards that only belong to the flushSuit
+        Hand flushSuitOnly = hand.stream()
+                .filter(card -> card.getSuit().equals(flushSuit))
+                .collect(Collectors.toCollection(Hand::new));
+
+        // creat royal flush list
+        List<Rank> royalStraight = Arrays.asList(Rank.TEN,Rank.JACK,Rank.QUEEN,Rank.KING,Rank.ACE);
+
+        // check that flushSuitOnly contains 10,J,Q,K,A
+        List<Rank> flushSuitOnlyRanks = flushSuitOnly.stream()
+                .map(Card::getRank)
+                .toList();
+
+        return flushSuitOnlyRanks.containsAll(royalStraight);
     }
 
-    public static void isStraightFlush(Hand hand) {
-        // not as simple as I thought originally
-        // must check that the straight and flush apply to the same cards
-
+    public static boolean isStraightFlush(Hand hand) {
         /*
         Ex. [3C, 6C, 7C, 8C, 9C, 10D, 4S]
 
@@ -42,10 +82,21 @@ public class Hand extends ArrayList<Card> {
         as the flush set
          */
 
-        /*
-        Just have to get the straight and ensure that all cards in the straight are of the same suit
-         */
+        // first, check if the hand is both a straight and a flush
+        if (!isStraight(hand) || !isFlush(hand)) {
+            return false;
+        }
 
+        // get the suit that makes the flush
+        Suit flushSuit = Suit.values()[getFlushSuit(hand)];
+
+        // create a smaller set of cards that only belong to the flushSuit
+        Hand flushSuitOnly = hand.stream()
+                .filter(card -> card.getSuit().equals(flushSuit))
+                .collect(Collectors.toCollection(Hand::new));
+
+        // check that the new subset is a straight
+        return isStraight(flushSuitOnly);
     }
 
     // check if there are 4 cards of the same rank
@@ -117,7 +168,7 @@ public class Hand extends ArrayList<Card> {
     // helper method for isStraight, checks if first 5 elements of a subarray are consecutive
     public static boolean hasFiveConsecutive(Hand hand) {
         for (int i = 0; i < 4; i++) {
-            if (hand.get(i+1).getRank().ordinal() != hand.get(i).getRank().ordinal()+1){
+            if (hand.get(i + 1).getRank().ordinal() != hand.get(i).getRank().ordinal() + 1) {
                 return false;
             }
         }
@@ -142,8 +193,8 @@ public class Hand extends ArrayList<Card> {
 
         // count the number of pairs in the hand
         int pairCount = (int) rankCount.values().stream()
-               .filter(count -> count >= 2)
-               .count();
+                .filter(count -> count >= 2)
+                .count();
 
         return pairCount == 2;
     }
@@ -152,14 +203,22 @@ public class Hand extends ArrayList<Card> {
     public static boolean isPair(Hand hand) {
         // use a stream to map each rank to its frequency
         Map<Rank, Long> rankCount = hand.stream()
-                        .collect(Collectors.groupingBy(Card::getRank, Collectors.counting()));
+                .collect(Collectors.groupingBy(Card::getRank, Collectors.counting()));
 
         // if rankCount >= 2, return true
         return rankCount.values().stream().anyMatch(count -> count >= 2);
     }
 
-    public void isHighCard() {
-        // probably doesn't need to be a boolean
-        // if all other helpers return false, must play high card so it should just return the highest card
+    public static int getFlushSuit(Hand hand) {
+        if (!isFlush(hand)) {
+            return -1;
+        }
+
+        // use a stream to map each suit to its frequency in the hand
+        Map<Suit, Long> suitCount = hand.stream()
+                .collect(Collectors.groupingBy(Card::getSuit, Collectors.counting()));
+
+        // return the ordinal value of the most frequent suit
+        return Collections.max(suitCount.entrySet(), Map.Entry.comparingByValue()).getKey().ordinal();
     }
 }
