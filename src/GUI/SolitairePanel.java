@@ -17,10 +17,10 @@ import javax.swing.*;
 
 public class SolitairePanel extends JPanel implements MouseListener, MouseMotionListener {
     final int WIDTH = 150;
-    final int CARDVERTSPACE = 20;
+    final int CARDVERTSPACE = 30;
     final int CARDHORIZSPACE = 20;
     final int COLUMNSTARTX = 20;
-    final int COLUMNSTARTY = 350;
+    final int COLUMNSTARTY = 300;
     Solitaire logic;
     ArrayList<CardPanel> movableCards;
     ArrayList<CardPanel> unflippedCards;
@@ -101,7 +101,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
      * Initializes the Column stacks
      */
     private void initColumns() {
-        int x = 10, y = 400;
+        int x = COLUMNSTARTX, y = COLUMNSTARTY;
         columnCoord = new ArrayList<>();
         columns = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
@@ -128,7 +128,6 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         for (int j = columnNum; j >= 0; j--) {
             Card card = logic.getColumn(columnNum).get(index);
             index++;
-            System.out.print(card + ", ");
             var cardPanel = new CardPanel(card, WIDTH);
 
             columns.get(columnNum).add(cardPanel);
@@ -141,7 +140,6 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
                 makeMovableCard(cardPanel);
             }
         }
-        System.out.println();
     }
 
     /**
@@ -186,8 +184,6 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
      * Displays the next card in the deck
      */
     private void showNextCard() {
-
-        logic.printDeck();
 
         // hides the deck card if the deck is empty or all cards are displayed
         if (logic.getDeckIndex() == logic.getDeckSize() - 1) {
@@ -269,7 +265,6 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         for (int i = movableCards.size() - 1; i >= 0; i--) {
             panel = movableCards.get(i);
             if (panel.coordInPanel(x, y)) {
-                makeCardTopCard(panel, i);
                 return panel;
             }
         }
@@ -280,7 +275,6 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     private void makeCardTopCard(CardPanel panel, int i) {
         // removes the card from the display and re-adds to make it
         // the top card
-        unflippedCards.remove(i);
         movableCards.remove(i);
         addMovableCard(panel);
     }
@@ -322,8 +316,6 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
             clickOffsetY = clickedCard.getY() - event.getY();
             returnColumn = idColumnWhole(event.getX(), event.getY());
             returnFoundation = idFoundation(event.getX() + 1, event.getY() + 1);
-            System.out.println(returnColumn + ":" + returnFoundation);
-
         }
     }
 
@@ -363,7 +355,6 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     private boolean moveCardInLogic(int x, int y) {
         int columnNum = idColumn(x, y);
         int foundationNum = idFoundation(x, y);
-        System.out.println(columnNum);
         boolean check = false;
         // if the card is from the deck, remove from deck
         if (deck.size() != 0 && clickedCard == deck.getLast()) {
@@ -412,50 +403,44 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
             check = moveCardInLogic(x, y);
             if (check) {
 
-                System.out.println("logic pass");
                 newColumn = idColumn(x, y);
                 newFoundation = idFoundation(x, y);
             } else {
 
-                System.out.println("logic fail");
             }
         }
 
         if (!check && returnX == drawX && returnY == drawY) {
-            System.out.println("return");
             clickedCard.setLocation(new Point(returnX, returnY));
         } else {
-            System.out.println("move");
             // move the cards
             if (returnColumn != -1) {
-                System.out.println("removing from col");
                 removeClickedFromColumn();
             } else if (returnFoundation != -1) {
-                System.out.println("removing from found");
                 removeClickedFromFoundation();
             }
 
             // refreshes the columns if moving between columns
             if (newColumn != -1) {
-                System.out.println("add to col");
                 addClickedToColumn(newColumn);
             }
             // if the card is added to a foundaiton
             else if (newFoundation != -1) {
-                System.out.println("add to foud");
                 addClickedToFoundation(newFoundation);
             } else {
-                System.out.println(returnColumn + ":" + returnFoundation);
                 if (returnColumn != -1) {
-                    System.out.println("reseting to col");
                     addClickedToColumn(returnColumn);
                 } else if (returnFoundation != -1) {
-                    System.out.println("reseting to found");
                     removeClickedFromFoundation();
                     addClickedToFoundation(returnFoundation);
                 }
 
             }
+        }
+
+        // flips the card that was exposed if the card was moved from a col
+        if (check && returnColumn != -1) {
+            flipTopCardInColumn(returnColumn);
         }
         repaint();
     }
@@ -541,7 +526,6 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
             height = height + deckPanel.getHeight();
 
             if (inDimensionAtCoord(newPoint, x, y, WIDTH, height)) {
-                System.out.println("PASS");
                 return index;
             }
         }
@@ -567,7 +551,6 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     public void setPreferredSize(Dimension dimension) {
         super.setPreferredSize(dimension);
         background.setSize(dimension);
-        System.out.println("test");
     }
 
     /**
@@ -575,11 +558,11 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
      */
     private void addClickedToColumn(int columnNum) {
         for (CardPanel panel : movingCards) {
-            unflippedCards.remove(panel);
-            unflippedCards.add(panel);
+            movableCards.remove(panel);
+            movableCards.add(panel);
             columns.get(columnNum).add(panel);
-            incrementColumnCoord(columnNum);
             panel.setLocation(columnCoord.get(columnNum));
+            incrementColumnCoord(columnNum);
         }
     }
 
@@ -592,11 +575,15 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
             decrementColumnCoord(returnColumn);
         }
 
+    }
+
+    /**
+     * Makes the next card in a column displayed
+     */
+    private void flipTopCardInColumn(int columnNum) {
         if (columns.get(returnColumn).size() > 0) {
             CardPanel panel = columns.get(returnColumn).getLast();
-            System.out.println(panel.getCard());
             if (!panel.getCard().isFaceUp()) {
-                System.out.println("flip");
                 makeMovableCard(panel);
                 updateDisplayedZOrder();
             }
