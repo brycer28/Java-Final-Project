@@ -2,6 +2,7 @@ package Logic;
 
 /*
 Game 1 : Texas Hold'em
+Author: brycer28
  */
 
 public class TexasHoldEm {
@@ -9,6 +10,7 @@ public class TexasHoldEm {
     private Hand playerHand = new Hand();
     private Hand dealerHand = new Hand();
     private Hand communityCards = new Hand();
+    private int pot;
 
     // runner class for an instance of the game
     public TexasHoldEm() {
@@ -26,24 +28,21 @@ public class TexasHoldEm {
         // will need more logic in the case of raising or folding
 
         // deal first 3 community cards (flop)
-        for (int i=0; i<3; i++) {
+        for (int i = 0; i < 3; i++) {
             dealCard(communityCards);
         }
 
         // second betting round (post-flop)
-
 
         // deal the 4th community card (turn)
         dealCard(communityCards);
 
         // third betting round (after turn)
 
-
         // deal the final community card (river)
         dealCard(communityCards);
 
         // final betting round (showdown)
-
 
         // evaluate player hands - will need to copy community cards to each hand
         // to make the best 5 card hand out of the 7 available
@@ -63,11 +62,11 @@ public class TexasHoldEm {
     }
 
     // takes in a hand and returns an integer the 'weight' of the hand
-    // weight will be according to an enum of hands (hi-card, pair, set, full house, etc.)
+    // weight will be according to an enum of hands (hi-card, pair, set, full house,
+    // etc.)
     public int evaluateHand(Hand hand) {
 
         return 0;
     }
-
 
 }
