@@ -17,8 +17,8 @@ import javax.swing.*;
 
 public class SolitairePanel extends JPanel implements MouseListener, MouseMotionListener {
     final int WIDTH = 150;
-    final int cardVertSpace = 40;
-    final int cardHorizSpace = 40;
+    final int CARDVERTSPACE = 40;
+    final int CARDHORIZSPACE = 40;
     final int COLUMNSTARTX = 20;
     final int COLUMNSTARTY = 400;
     Solitaire logic;
@@ -104,7 +104,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         columns = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
             columns.add(new ArrayList<>());
-            columnCoord.add(new Point(x, y - cardHorizSpace));
+            columnCoord.add(new Point(x, y - CARDHORIZSPACE));
 
             // adds placeholders
             var panel = new JPanel();
@@ -192,6 +192,9 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
 
     }
 
+    /**
+     * Adds a card to the movable card list
+     */
     private void addMovableCard(CardPanel cardPanel) {
         this.add(cardPanel);
         movableCards.add(cardPanel);
@@ -232,7 +235,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
             int y = event.getY() + clickOffsetY;
 
             panel.setLocation(new Point(x, y + offset));
-            offset += cardVertSpace;
+            offset += CARDVERTSPACE;
             this.setComponentZOrder(panel, 0);
         }
         repaint();
@@ -478,8 +481,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     private int idColumnWhole(int x, int y) {
         for (int index = 0; index < columnCoord.size(); index++) {
             Point point = columnCoord.get(index);
-            int height = columns.get(index).size() * cardVertSpace;
-            // point.setLocation(point.getX(), point.getY() - height);
+            int height = columns.get(index).size() * CARDVERTSPACE;
             Point newPoint = new Point((int) point.getX(), (int) point.getY() - height);
             height = height + deckPanel.getHeight();
 
@@ -518,6 +520,8 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
      */
     private void addClickedToColumn(int columnNum) {
         for (CardPanel panel : movingCards) {
+            movableCards.remove(panel);
+            movableCards.add(panel);
             columns.get(columnNum).add(panel);
             incrementColumnCoord(columnNum);
             panel.setLocation(columnCoord.get(columnNum));
@@ -552,12 +556,12 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     private void incrementColumnCoord(int columnNum) {
         columnCoord.set(columnNum,
                 new Point((int) columnCoord.get(columnNum).getX(),
-                        (int) columnCoord.get(columnNum).getY() + cardVertSpace));
+                        (int) columnCoord.get(columnNum).getY() + CARDVERTSPACE));
     }
 
     private void decrementColumnCoord(int columnNum) {
         columnCoord.set(columnNum,
                 new Point((int) columnCoord.get(columnNum).getX(),
-                        (int) columnCoord.get(columnNum).getY() - cardVertSpace));
+                        (int) columnCoord.get(columnNum).getY() - CARDVERTSPACE));
     }
 }

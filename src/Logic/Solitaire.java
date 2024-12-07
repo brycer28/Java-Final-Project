@@ -212,7 +212,7 @@ public class Solitaire {
     }
 
     /**
-     * Revoves the card that was most recently flipped
+     * Removes the card that was most recently flipped
      */
     public Card removeDisplayedCard() {
         int cardIndex = deckIndex - 1;
@@ -277,6 +277,7 @@ public class Solitaire {
     public Card flipTopCard() {
         if (deck.size() < 1) {
             System.out.println("Error getting card, deck is empty");
+            return null;
         }
         Card card = deck.get(deckIndex);
         deckIndex += 1;
