@@ -224,7 +224,6 @@ public class Solitaire {
             cardIndex = deck.size() - 1;
         }
         Card card = deck.get(cardIndex);
-        System.out.println("removing " + card + " from index: " + cardIndex);
         deck.remove(cardIndex);
         if (deckIndex != 0) {
             deckIndex -= 1;
@@ -260,7 +259,6 @@ public class Solitaire {
             System.out.println("Error getting card, deck is empty");
             return null;
         }
-        System.out.println("deck index is " + deckIndex);
         Card card = deck.get(deckIndex);
         deck.remove(deckIndex);
         if (deckIndex >= deck.size()) {
@@ -313,6 +311,9 @@ public class Solitaire {
             }
         }
 
+    }
+
+    public void printColumns() {
         for (ArrayList<Card> list : column) {
             for (Card card : list) {
                 System.out.print(card + ", ");
