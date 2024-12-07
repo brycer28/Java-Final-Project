@@ -18,7 +18,7 @@ public class Hand extends ArrayList<Card> {
         super();
     }
 
-    public HandRanks evaluateHand(Hand hand) {
+    public static HandRanks evaluateHand(Hand hand) {
         // check that hand is not null or empty
         if (hand == null || hand.isEmpty()) {
             throw new IllegalArgumentException("Hand is null or empty");
@@ -147,29 +147,45 @@ public class Hand extends ArrayList<Card> {
         // sort the values in the hand by their ordinal value
         hand.sort(Comparator.comparing(Card::getRank));
 
-        // check if first subset is consecutive
-        boolean isStraight = hasFiveConsecutive(hand);
-
-        // if the first is not a straight, remove first element and check again
-        if (!isStraight) {
-            hand.removeFirst();
-            isStraight = hasFiveConsecutive(hand);
+        for (int i = 0; i <= hand.size() - 5; i++) {
+            // create a subset of the cards to check if the cards are sequential
+            List<Card> subset = hand.subList(i, i + 5);
+            if (hasFiveConsecutive(subset)) {
+                return true;
+            }
         }
-
-        // if second is not a straight, remove first element and check a final time
-        if (!isStraight) {
-            hand.removeFirst();
-            isStraight = hasFiveConsecutive(hand);
-        }
-
-        return isStraight;
+        return false;
     }
 
     // helper method for isStraight, checks if first 5 elements of a subarray are consecutive
-    public static boolean hasFiveConsecutive(Hand hand) {
+    public static boolean hasFiveConsecutive(List<Card> hand) {
+        if (hand.size() != 5) {
+            return false;
+        }
+
+        // cast to a set to check for duplicates
+        Set<Rank> uniqueRanks = new HashSet<>();
+        for (Card card : hand) {
+            uniqueRanks.add(card.getRank());
+        }
+
+        if (uniqueRanks.size() < 5) {
+            return false;
+        }
+
+        // sort unique ranks into sorted lists
+        List<Rank> sortedRanks = new ArrayList<>(uniqueRanks);
+        Collections.sort(sortedRanks);
+
         for (int i = 0; i < 4; i++) {
-            if (hand.get(i + 1).getRank().ordinal() != hand.get(i).getRank().ordinal() + 1) {
-                return false;
+            int currentRank = sortedRanks.get(i).ordinal();
+            int nextRank = sortedRanks.get(i + 1).ordinal();
+
+            if (nextRank != currentRank + 1) {
+                // special case for checking ace (can be 1 or 14)
+                if (!(currentRank == 12 && nextRank == 0)) {
+                    return false;
+                }
             }
         }
         return true;
