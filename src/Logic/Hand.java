@@ -18,7 +18,7 @@ public class Hand extends ArrayList<Card> {
         super();
     }
 
-    public static HandRanks evaluateHand(Hand hand) {
+    public HandRanks evaluateHand(Hand hand) {
         // check that hand is not null or empty
         if (hand == null || hand.isEmpty()) {
             throw new IllegalArgumentException("Hand is null or empty");
@@ -75,11 +75,11 @@ public class Hand extends ArrayList<Card> {
 
     public static boolean isStraightFlush(Hand hand) {
         /*
-        Ex. [3C, 6C, 7C, 8C, 9C, 10D, 4S]
-
-        This hand has a straight (6,7,8,9,10) AND a flush (5 Clubs)
-        but the set of cards that make the straight is not the same
-        as the flush set
+         * Ex. [3C, 6C, 7C, 8C, 9C, 10D, 4S]
+         *
+         * This hand has a straight (6,7,8,9,10) AND a flush (5 Clubs)
+         * but the set of cards that make the straight is not the same
+         * as the flush set
          */
 
         // first, check if the hand is both a straight and a flush
@@ -108,7 +108,8 @@ public class Hand extends ArrayList<Card> {
         return rankCount.values().stream().anyMatch(count -> count >= 4);
     }
 
-    // check if there is both a pair and a set in the same hand and that they are of 2 distinct ranks
+    // check if there is both a pair and a set in the same hand and that they are of
+    // 2 distinct ranks
     public static boolean isFullHouse(Hand hand) {
         // use a stream to map each rank to its frequency
         Map<Rank, Long> rankCount = hand.stream()

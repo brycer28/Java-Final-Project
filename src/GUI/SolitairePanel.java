@@ -1,3 +1,5 @@
+//TODO: card order needs to be fixed when placing in foundation
+//Foundation does not check suit properly
 package GUI;
 
 import Logic.*;
@@ -17,12 +19,13 @@ import javax.swing.*;
 
 public class SolitairePanel extends JPanel implements MouseListener, MouseMotionListener {
     final int WIDTH = 150;
-    final int cardVertSpace = 40;
-    final int cardHorizSpace = 40;
+    final int CARDVERTSPACE = 30;
+    final int CARDHORIZSPACE = 20;
     final int COLUMNSTARTX = 20;
-    final int COLUMNSTARTY = 400;
+    final int COLUMNSTARTY = 300;
     Solitaire logic;
     ArrayList<CardPanel> movableCards;
+    ArrayList<CardPanel> unflippedCards;
     ArrayList<CardPanel> deck;
     ArrayList<ArrayList<CardPanel>> columns;
     ArrayList<ArrayList<CardPanel>> foundations;
@@ -33,7 +36,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     int returnColumn = -1;
     int returnFoundation = -1;
     CardPanel deckPanel = new CardPanel(CardType.BACK, WIDTH);
-    final int drawX = 250, drawY = 10, deckX = 10, deckY = 10;
+    final int drawX = 200, drawY = 10, deckX = 10, deckY = 10;
     ArrayList<Point> foundationCoord;
     ArrayList<Point> columnCoord;
     JPanel background;
@@ -43,6 +46,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         super();
         logic = new Solitaire();
         movableCards = new ArrayList<>();
+        unflippedCards = new ArrayList<>();
         movingCards = new ArrayList<>();
         this.setLayout(null);
         this.setOpaque(false);
@@ -78,7 +82,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
      * Initializes the Foundation stacks
      */
     private void initFoundations() {
-        int x = 600, y = 10;
+        int x = 500, y = 10;
         foundationCoord = new ArrayList<>();
         foundations = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
@@ -90,7 +94,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
             panel.setBackground(Color.green);
             panel.setLocation(x, y);
             background.add(panel);
-            x += deckPanel.getWidth() + 10;
+            x += deckPanel.getWidth() + CARDHORIZSPACE;
         }
 
     }
@@ -99,12 +103,12 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
      * Initializes the Column stacks
      */
     private void initColumns() {
-        int x = 10, y = 400;
+        int x = COLUMNSTARTX, y = COLUMNSTARTY;
         columnCoord = new ArrayList<>();
         columns = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
             columns.add(new ArrayList<>());
-            columnCoord.add(new Point(x, y - cardHorizSpace));
+            columnCoord.add(new Point(x, y));
 
             // adds placeholders
             var panel = new JPanel();
@@ -112,9 +116,32 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
             panel.setBackground(Color.green);
             panel.setLocation(x, y);
             background.add(panel);
-            x += deckPanel.getWidth() + 10;
-        }
+            x += deckPanel.getWidth() + CARDHORIZSPACE;
 
+            initColumn(i);
+        }
+    }
+
+    /**
+     * Initializes the specified column
+     */
+    private void initColumn(int columnNum) {
+        int index = 0;
+        for (int j = columnNum; j >= 0; j--) {
+            Card card = logic.getColumn(columnNum).get(index);
+            index++;
+            var cardPanel = new CardPanel(card, WIDTH);
+
+            columns.get(columnNum).add(cardPanel);
+            cardPanel.setLocation(columnCoord.get(columnNum));
+            addNonMovableCard(cardPanel);
+            incrementColumnCoord(columnNum);
+            cardPanel.flipCard();
+
+            if (j == 0) {
+                makeMovableCard(cardPanel);
+            }
+        }
     }
 
     /**
@@ -131,7 +158,6 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
 
     /**
      * Checks if the deck is clicked
-     * If yes, does deck action
      */
     private boolean isDeckCoord(int x, int y) {
         if (x > deckPanel.getX()
@@ -161,9 +187,6 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
      */
     private void showNextCard() {
 
-        System.out.println("deck index = " + logic.getDeckIndex());
-        logic.printDeck();
-
         // hides the deck card if the deck is empty or all cards are displayed
         if (logic.getDeckIndex() == logic.getDeckSize() - 1) {
             deckPanel.setVisible(false);
@@ -192,17 +215,48 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
 
     }
 
+    /**
+     * Makes a un-flipped card a flipped card
+     */
+    private void makeMovableCard(CardPanel cardPanel) {
+        cardPanel.flipCard();
+        unflippedCards.remove(cardPanel);
+        movableCards.add(cardPanel);
+        updateDisplayedZOrder();
+    }
+
+    /**
+     * Adds a card to the movable card list
+     */
     private void addMovableCard(CardPanel cardPanel) {
         this.add(cardPanel);
         movableCards.add(cardPanel);
-        int i = movableCards.size();
+        updateDisplayedZOrder();
+    }
+
+    /**
+     * Adds a card to the non-movable card list
+     */
+    private void addNonMovableCard(CardPanel cardPanel) {
+        this.add(cardPanel);
+        unflippedCards.add(cardPanel);
+        updateDisplayedZOrder();
+    }
+
+    /**
+     * updates the z order for all of the cards
+     */
+    private void updateDisplayedZOrder() {
+        int i = unflippedCards.size() + movableCards.size();
         this.setComponentZOrder(background, i + 1);
+        for (CardPanel panel : unflippedCards) {
+            this.setComponentZOrder(panel, i);
+            i--;
+        }
         for (CardPanel panel : movableCards) {
             this.setComponentZOrder(panel, i);
             i--;
-
         }
-
     }
 
     /**
@@ -213,15 +267,18 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         for (int i = movableCards.size() - 1; i >= 0; i--) {
             panel = movableCards.get(i);
             if (panel.coordInPanel(x, y)) {
-                // removes the card from the display and re-adds to make it
-                // the top card
-                movableCards.remove(i);
-                addMovableCard(panel);
                 return panel;
             }
         }
 
         return null;
+    }
+
+    private void makeCardTopCard(CardPanel panel, int i) {
+        // removes the card from the display and re-adds to make it
+        // the top card
+        movableCards.remove(i);
+        addMovableCard(panel);
     }
 
     @Override
@@ -232,7 +289,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
             int y = event.getY() + clickOffsetY;
 
             panel.setLocation(new Point(x, y + offset));
-            offset += cardVertSpace;
+            offset += CARDVERTSPACE;
             this.setComponentZOrder(panel, 0);
         }
         repaint();
@@ -261,9 +318,6 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
             clickOffsetY = clickedCard.getY() - event.getY();
             returnColumn = idColumnWhole(event.getX(), event.getY());
             returnFoundation = idFoundation(event.getX() + 1, event.getY() + 1);
-            System.out.println(returnColumn + ":" + returnFoundation);
-            repaint();
-
         }
     }
 
@@ -303,12 +357,11 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     private boolean moveCardInLogic(int x, int y) {
         int columnNum = idColumn(x, y);
         int foundationNum = idFoundation(x, y);
-        System.out.println(columnNum);
         boolean check = false;
         // if the card is from the deck, remove from deck
         if (deck.size() != 0 && clickedCard == deck.getLast()) {
             if (foundationNum != -1) {
-                check = logic.addToFoundation(foundationNum, columnNum, clickedCard.getCard());
+                check = logic.addToFoundation(foundationNum, returnColumn, clickedCard.getCard());
             } else {
                 check = logic.addToColumn(columnNum, clickedCard.getCard());
             }
@@ -323,7 +376,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         else if (returnColumn != -1) {
             // if the card being added to a foundation, try to add and
             if (foundationNum != -1) {
-                check = logic.addToFoundation(foundationNum, columnNum, clickedCard.getCard());
+                check = logic.addToFoundation(foundationNum, returnColumn, clickedCard.getCard());
             } else if (columnNum != -1) {
                 check = logic.moveCardToColumn(returnColumn, columnNum, clickedCard.getCard());
             } else {
@@ -351,54 +404,47 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         if (!snapBack) {
             check = moveCardInLogic(x, y);
             if (check) {
-
-                System.out.println("logic pass");
+                System.out.println("pass");
                 newColumn = idColumn(x, y);
                 newFoundation = idFoundation(x, y);
             } else {
-
-                System.out.println("logic fail");
+                System.out.println("fail");
             }
         }
 
         if (!check && returnX == drawX && returnY == drawY) {
-
-            System.out.println("return");
             clickedCard.setLocation(new Point(returnX, returnY));
         } else {
-
-            System.out.println("move");
             // move the cards
             if (returnColumn != -1) {
-                System.out.println("removing from col");
                 removeClickedFromColumn();
             } else if (returnFoundation != -1) {
-                System.out.println("removing from found");
                 removeClickedFromFoundation();
             }
 
             // refreshes the columns if moving between columns
             if (newColumn != -1) {
-                System.out.println("add to col");
                 addClickedToColumn(newColumn);
             }
             // if the card is added to a foundaiton
             else if (newFoundation != -1) {
-                System.out.println("add to foud");
                 addClickedToFoundation(newFoundation);
             } else {
-                System.out.println(returnColumn + ":" + returnFoundation);
                 if (returnColumn != -1) {
-                    System.out.println("reseting to col");
                     addClickedToColumn(returnColumn);
                 } else if (returnFoundation != -1) {
-                    System.out.println("reseting to found");
                     removeClickedFromFoundation();
                     addClickedToFoundation(returnFoundation);
                 }
 
             }
         }
+
+        // flips the card that was exposed if the card was moved from a col
+        if (check && returnColumn != -1) {
+            flipTopCardInColumn(returnColumn);
+        }
+        logic.printColumns();
         repaint();
     }
 
@@ -419,12 +465,12 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         boolean snapBack = true;
         // checks if in columns
         int index = idColumn(x, y);
-        if (index != -1) {
+        if (index != -1 && returnColumn != index) {
             snapBack = false;
         }
         // checks if in foundation
         index = idFoundation(x, y);
-        if (index != -1) {
+        if (index != -1 && returnFoundation != index) {
             snapBack = false;
         }
 
@@ -478,13 +524,11 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     private int idColumnWhole(int x, int y) {
         for (int index = 0; index < columnCoord.size(); index++) {
             Point point = columnCoord.get(index);
-            int height = columns.get(index).size() * cardVertSpace;
-            // point.setLocation(point.getX(), point.getY() - height);
+            int height = columns.get(index).size() * CARDVERTSPACE;
             Point newPoint = new Point((int) point.getX(), (int) point.getY() - height);
             height = height + deckPanel.getHeight();
 
             if (inDimensionAtCoord(newPoint, x, y, WIDTH, height)) {
-                System.out.println("PASS");
                 return index;
             }
         }
@@ -510,7 +554,6 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     public void setPreferredSize(Dimension dimension) {
         super.setPreferredSize(dimension);
         background.setSize(dimension);
-        System.out.println("test");
     }
 
     /**
@@ -518,9 +561,11 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
      */
     private void addClickedToColumn(int columnNum) {
         for (CardPanel panel : movingCards) {
+            movableCards.remove(panel);
+            movableCards.add(panel);
             columns.get(columnNum).add(panel);
-            incrementColumnCoord(columnNum);
             panel.setLocation(columnCoord.get(columnNum));
+            incrementColumnCoord(columnNum);
         }
     }
 
@@ -531,6 +576,20 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         for (CardPanel panel : movingCards) {
             columns.get(returnColumn).remove(panel);
             decrementColumnCoord(returnColumn);
+        }
+
+    }
+
+    /**
+     * Makes the next card in a column displayed
+     */
+    private void flipTopCardInColumn(int columnNum) {
+        if (columns.get(returnColumn).size() > 0) {
+            CardPanel panel = columns.get(returnColumn).getLast();
+            if (!panel.getCard().isFaceUp()) {
+                makeMovableCard(panel);
+                updateDisplayedZOrder();
+            }
         }
     }
 
@@ -552,12 +611,12 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     private void incrementColumnCoord(int columnNum) {
         columnCoord.set(columnNum,
                 new Point((int) columnCoord.get(columnNum).getX(),
-                        (int) columnCoord.get(columnNum).getY() + cardVertSpace));
+                        (int) columnCoord.get(columnNum).getY() + CARDVERTSPACE));
     }
 
     private void decrementColumnCoord(int columnNum) {
         columnCoord.set(columnNum,
                 new Point((int) columnCoord.get(columnNum).getX(),
-                        (int) columnCoord.get(columnNum).getY() - cardVertSpace));
+                        (int) columnCoord.get(columnNum).getY() - CARDVERTSPACE));
     }
 }
