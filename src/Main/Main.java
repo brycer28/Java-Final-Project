@@ -10,13 +10,13 @@ public class Main {
 
     public static void main(String[] args) {
         // create cards
-        Card c1 = new Card(Card.Suit.SPADES, Card.Rank.TWO);
-        Card c2 = new Card(Card.Suit.DIAMONDS, Card.Rank.TEN);
-        Card c3 = new Card(Card.Suit.DIAMONDS, Card.Rank.JACK);
-        Card c4 = new Card(Card.Suit.DIAMONDS, Card.Rank.QUEEN);
-        Card c5 = new Card(Card.Suit.DIAMONDS, Card.Rank.KING);
-        Card c6 = new Card(Card.Suit.DIAMONDS, Card.Rank.ACE);
-        Card c7 = new Card(Card.Suit.HEARTS, Card.Rank.EIGHT);
+        Card c1 = new Card(Card.Suit.SPADES, Card.Rank.ACE);
+        Card c2 = new Card(Card.Suit.DIAMONDS, Card.Rank.TWO);
+        Card c3 = new Card(Card.Suit.DIAMONDS, Card.Rank.THREE);
+        Card c4 = new Card(Card.Suit.DIAMONDS, Card.Rank.FOUR);
+        Card c5 = new Card(Card.Suit.DIAMONDS, Card.Rank.FIVE);
+        Card c6 = new Card(Card.Suit.DIAMONDS, Card.Rank.SIX);
+        Card c7 = new Card(Card.Suit.DIAMONDS, Card.Rank.EIGHT);
 
         // create hand
         Hand hand = new Hand();
@@ -30,8 +30,18 @@ public class Main {
 
         //System.out.println(hand.toString());
 
-        System.out.println(Logic.Hand.isRoyalFlush(hand));
 
+        System.out.println("PAIR: " + Logic.Hand.isPair(hand));
+        System.out.println("TWO PAIR: " + Logic.Hand.isTwoPair(hand));
+        System.out.println("THREE OF A KIND: " + Logic.Hand.isThreeOfAKind(hand));
+        System.out.println("STRAIGHT: " + Logic.Hand.isStraight(hand));
+        System.out.println("FLUSH: " + Logic.Hand.isFlush(hand));
+        System.out.println("FULL HOUSE: " + Logic.Hand.isFullHouse(hand));
+        System.out.println("FOUR OF A KIND: " + Logic.Hand.isFourOfAKind(hand));
+        System.out.println("STRAIGHT FLUSH: " + Logic.Hand.isStraightFlush(hand));
+        System.out.println("ROYAL FLUSH: " + Logic.Hand.isRoyalFlush(hand));
+
+        System.out.println("\nBEST HAND: " + Logic.Hand.evaluateHand(hand));
 
 
     }
