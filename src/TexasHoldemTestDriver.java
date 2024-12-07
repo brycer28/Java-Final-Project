@@ -17,6 +17,5 @@ public class TexasHoldemTestDriver {
 
         frame.setVisible(true);
         frame.pack();
-
     }
 }

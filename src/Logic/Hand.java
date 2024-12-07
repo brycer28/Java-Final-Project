@@ -18,7 +18,7 @@ public class Hand extends ArrayList<Card> {
         super();
     }
 
-    public HandRanks evaluateHand(Hand hand) {
+    public static HandRanks evaluateHand(Hand hand) {
         // check that hand is not null or empty
         if (hand == null || hand.isEmpty()) {
             throw new IllegalArgumentException("Hand is null or empty");

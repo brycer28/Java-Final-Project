@@ -79,7 +79,6 @@ public class TexasHoldemPanel extends JPanel {
         System.out.println(dealerHand.toString());
 
         updateHands();
-
     }
 
     public JPanel initOptions() {
