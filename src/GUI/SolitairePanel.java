@@ -41,6 +41,8 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     ArrayList<Point> columnCoord;
     JPanel background;
     int zValue = 0;
+    JButton restartButton;
+    JButton quitButton;
 
     public SolitairePanel() {
         super();
@@ -50,12 +52,12 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         movingCards = new ArrayList<>();
         this.setLayout(null);
         this.setOpaque(false);
-        this.setBackground(new Color(0, 100, 0));
 
         initBackground();
         initDeck();
         initFoundations();
         initColumns();
+        initButtons();
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
         repaint();
@@ -74,8 +76,60 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         background.setLayout(null);
         background.setBackground(new Color(0, 100, 0));
         background.setLocation(0, 0);
-        this.setComponentZOrder(background, 0);
+        background.setSize(this.getWidth(), this.getHeight());
         addPanel(background);
+    }
+
+    /**
+     * Initializes the Buttons for controlling the game
+     */
+    private void initButtons() {
+        restartButton = new JButton("Restart");
+        restartButton.addActionListener(e -> restartGame());
+        restartButton.setLocation((int) foundationCoord.getLast().getX() + 250, 100);
+        restartButton.setSize(100, 30);
+        this.add(restartButton);
+        this.setComponentZOrder(restartButton, 0);
+
+        // quit
+        quitButton = new JButton("Quit");
+        quitButton.addActionListener(e -> endGame());
+        quitButton.setLocation((int) foundationCoord.getLast().getX() + 250, 200);
+        quitButton.setSize(100, 30);
+        this.add(quitButton);
+        this.setComponentZOrder(quitButton, 0);
+    }
+
+    /**
+     * Destroys the solitaire panel
+     */
+    private void endGame() {
+        this.getParent().remove(this);
+        this.validate();
+    }
+
+    /**
+     * Resets the game board and starts a new game
+     */
+    private void restartGame() {
+        logic = new Solitaire();
+        // clear screen
+        this.removeAll();
+        this.setLayout(null);
+        this.setOpaque(false);
+
+        // empty containers
+        movableCards.clear();
+        unflippedCards.clear();
+        movingCards.clear();
+
+        initBackground();
+        initDeck();
+        initFoundations();
+        initColumns();
+        initButtons();
+
+        repaint();
     }
 
     /**
@@ -404,11 +458,9 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         if (!snapBack) {
             check = moveCardInLogic(x, y);
             if (check) {
-                System.out.println("pass");
                 newColumn = idColumn(x, y);
                 newFoundation = idFoundation(x, y);
             } else {
-                System.out.println("fail");
             }
         }
 
@@ -416,17 +468,18 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
             clickedCard.setLocation(new Point(returnX, returnY));
         } else {
             // move the cards
+            // removes from old location
             if (returnColumn != -1) {
                 removeClickedFromColumn();
             } else if (returnFoundation != -1) {
                 removeClickedFromFoundation();
             }
 
-            // refreshes the columns if moving between columns
+            // moves the card to the new location
             if (newColumn != -1) {
                 addClickedToColumn(newColumn);
             }
-            // if the card is added to a foundaiton
+            // if the card is added to a foundation
             else if (newFoundation != -1) {
                 addClickedToFoundation(newFoundation);
             } else {
@@ -444,7 +497,6 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         if (check && returnColumn != -1) {
             flipTopCardInColumn(returnColumn);
         }
-        logic.printColumns();
         repaint();
     }
 
@@ -597,6 +649,8 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
      * Adds clicked to foundation
      */
     private void addClickedToFoundation(int foundationNum) {
+        movableCards.remove(clickedCard);
+        movableCards.add(clickedCard);
         foundations.get(foundationNum).add(clickedCard);
         clickedCard.setLocation(foundationCoord.get(foundationNum));
     }

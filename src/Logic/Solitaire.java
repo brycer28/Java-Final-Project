@@ -79,7 +79,7 @@ public class Solitaire {
             }
         }
         // checks if the card is the same suit
-        if (isOppositeSuit(card, foundation.get(foundationNum).getLast())) {
+        if (foundation.get(foundationNum).getLast().getSuit() != card.getSuit()) {
             return false;
         }
 
@@ -223,7 +223,6 @@ public class Solitaire {
     public Card removeDisplayedCard() {
         int cardIndex = deckIndex - 1;
         if (deck.size() == 0) {
-            System.out.println("Error getting card, deck is empty");
             return null;
         }
         if (cardIndex == -1) {
@@ -262,7 +261,6 @@ public class Solitaire {
      */
     public Card removeTopCard() {
         if (deck.size() < 1) {
-            System.out.println("Error getting card, deck is empty");
             return null;
         }
         Card card = deck.get(deckIndex);
@@ -280,7 +278,6 @@ public class Solitaire {
      */
     public Card flipTopCard() {
         if (deck.size() < 1) {
-            System.out.println("Error getting card, deck is empty");
             return null;
         }
         Card card = deck.get(deckIndex);
