@@ -13,7 +13,7 @@ public class SolitaireTestDriver {
     final static int SCREENWIDTH = 1500, SCREENHEIGHT = 1000;
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Data Visualization Tool");
+        JFrame frame = new JFrame("Solitaire");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         SolitairePanel panel = new SolitairePanel();
