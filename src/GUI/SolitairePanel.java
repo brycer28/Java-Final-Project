@@ -1,3 +1,5 @@
+//TODO: card order needs to be fixed when placing in foundation
+//Foundation does not check suit properly
 package GUI;
 
 import Logic.*;
@@ -359,7 +361,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         // if the card is from the deck, remove from deck
         if (deck.size() != 0 && clickedCard == deck.getLast()) {
             if (foundationNum != -1) {
-                check = logic.addToFoundation(foundationNum, columnNum, clickedCard.getCard());
+                check = logic.addToFoundation(foundationNum, returnColumn, clickedCard.getCard());
             } else {
                 check = logic.addToColumn(columnNum, clickedCard.getCard());
             }
@@ -374,7 +376,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         else if (returnColumn != -1) {
             // if the card being added to a foundation, try to add and
             if (foundationNum != -1) {
-                check = logic.addToFoundation(foundationNum, columnNum, clickedCard.getCard());
+                check = logic.addToFoundation(foundationNum, returnColumn, clickedCard.getCard());
             } else if (columnNum != -1) {
                 check = logic.moveCardToColumn(returnColumn, columnNum, clickedCard.getCard());
             } else {
@@ -402,11 +404,11 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         if (!snapBack) {
             check = moveCardInLogic(x, y);
             if (check) {
-
+                System.out.println("pass");
                 newColumn = idColumn(x, y);
                 newFoundation = idFoundation(x, y);
             } else {
-
+                System.out.println("fail");
             }
         }
 
@@ -442,6 +444,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         if (check && returnColumn != -1) {
             flipTopCardInColumn(returnColumn);
         }
+        logic.printColumns();
         repaint();
     }
 

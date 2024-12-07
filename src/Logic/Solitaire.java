@@ -70,6 +70,9 @@ public class Solitaire {
         if (foundation.get(foundationNum).size() == 0) {
             if (card.getRank() == Card.Rank.ACE) {
                 foundation.get(foundationNum).add(card);
+                // checks if a card needs to be removed from a col
+                if (columnNum != -1)
+                    column.get(columnNum).removeLast();
                 return true;
             } else {
                 return false;
@@ -83,6 +86,9 @@ public class Solitaire {
         // checks if the card is the next largest number
         if (isNextLowestCard(card, foundation.get(foundationNum).getLast())) {
             foundation.get(foundationNum).add(card);
+            // checks if a card needs to be removed from a col
+            if (columnNum != -1)
+                column.get(columnNum).removeLast();
             return true;
         } else {
             return false;
