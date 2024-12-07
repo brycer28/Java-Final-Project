@@ -2,7 +2,6 @@ package Logic;
 
 /*
 Game 1 : Texas Hold'em
-Author: brycer28
  */
 
 public class TexasHoldEm {
@@ -10,7 +9,6 @@ public class TexasHoldEm {
     private Hand playerHand = new Hand();
     private Hand dealerHand = new Hand();
     private Hand communityCards = new Hand();
-    private int pot;
 
     // runner class for an instance of the game
     public TexasHoldEm() {
