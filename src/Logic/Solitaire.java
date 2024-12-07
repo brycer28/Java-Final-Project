@@ -7,7 +7,7 @@ public class Solitaire {
     Deck deck;
     ArrayList<ArrayList<Card>> foundation;
     ArrayList<ArrayList<Card>> column;
-    int deckIndex = 50; // index number for the currently displayed card, -1 if none
+    int deckIndex = 0; // index number for the currently displayed card, -1 if none
 
     public Solitaire() {
         deck = new Deck();
@@ -292,7 +292,7 @@ public class Solitaire {
     }
 
     /**
-     * Intitializes the foundation ArrayList
+     * Initializes the foundation ArrayList
      */
     private void initFoundation() {
         foundation = new ArrayList<>();
@@ -302,12 +302,22 @@ public class Solitaire {
     }
 
     /**
-     * Intitializes the column ArrayList
+     * Initializes the column ArrayList
      */
     private void initColumn() {
         column = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
             column.add(new ArrayList<>());
+            for (int j = i; j >= 0; j--) {
+                column.getLast().add(removeTopCard());
+            }
+        }
+
+        for (ArrayList<Card> list : column) {
+            for (Card card : list) {
+                System.out.print(card + ", ");
+            }
+            System.out.println();
         }
     }
 
