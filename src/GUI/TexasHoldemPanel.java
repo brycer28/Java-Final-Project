@@ -43,7 +43,7 @@ public class TexasHoldemPanel extends JPanel {
         setPreferredSize(new Dimension(GAME_WIDTH, GAME_HEIGHT));
         setBackground(new Color(0, 100, 0));
 
-        // add hand panels and community cards panel
+        // create and add hand panels and community cards panel
         playerHandPanel.setBounds((GAME_WIDTH/2-HAND_WIDTH/2), 600, HAND_WIDTH, HAND_HEIGHT);
         playerHandPanel.setBackground(new Color(0, 150, 0));
         add(playerHandPanel);
@@ -56,69 +56,72 @@ public class TexasHoldemPanel extends JPanel {
         communityCardsPanel.setBackground(new Color(0, 150, 0));
         add(communityCardsPanel);
 
-        // create an options panel
+        // create adn add an options panel
         optionsPanel = initOptions();
         optionsPanel.setBounds((GAME_WIDTH/2-OPT_WIDTH/2), 40, OPT_WIDTH, OPT_HEIGHT);
         optionsPanel.setBackground(new Color(0, 100, 0));
         add(optionsPanel);
 
-        // create a stats panel to show current
+        // create and add a stats panel to show current stats
         statsPanel.setBounds(20, 20, STATS_WIDTH, STATS_HEIGHT);
         statsPanel.setBackground(new Color(0, 150, 0));
         add(statsPanel);
         updateStats();
-
-
-        // begin game logic
-        logic.dealCard(playerHand);
-        logic.dealCard(dealerHand);
-        logic.dealCard(playerHand);
-        logic.dealCard(dealerHand);
-
-        System.out.println(playerHand.toString());
-        System.out.println(dealerHand.toString());
-
-        updateHands();
     }
 
     public JPanel initOptions() {
         options = new ArrayList<>();
 
-        // create hit button
-        JButton hitButton = new JButton("Hit");
-        hitButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
-        hitButton.addActionListener(e -> {
-
+        // create check button
+        JButton checkButton = new JButton("Check");
+        checkButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+        checkButton.addActionListener(e -> {
+            logic.setPlayerDecision(0);
         });
 
         // create call button
         JButton callButton = new JButton("Call");
         callButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
         callButton.addActionListener(e -> {
-
+            logic.setPlayerDecision(1);
         });
 
         // create fold button
         JButton foldButton = new JButton("Fold");
         foldButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
         foldButton.addActionListener(e -> {
-
+            logic.setPlayerDecision(2);
         });
 
-        // create raise button ( may change to a JTextBox w/ submit button for entering raise )
+        // create raise field and button to submit
+        JTextField raiseField = new JTextField(5);
+        raiseField.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+
+        // submit raise field
         JButton raiseButton = new JButton("Raise");
         raiseButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
         raiseButton.addActionListener(e -> {
-
+            String raiseAmt = raiseField.getText();
+            try {
+                int raiseInt = Integer.parseInt(raiseAmt);
+                if (raiseInt < 0) {
+                    JOptionPane.showMessageDialog(null, "You can't raise a negative number", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    logic.setPlayerDecision(2);
+                    logic.setRaiseAmount(raiseInt);
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "You can't raise a negative number", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
 
-        options.add(hitButton);
+        options.add(checkButton);
         options.add(callButton);
         options.add(foldButton);
-        options.add(raiseButton);
+        options.add(raiseField);
 
         JPanel optionsPanel = new JPanel();
-        optionsPanel.setLayout(new GridLayout(1, 4, 20, 0));
+        optionsPanel.setLayout(new GridLayout(1, 5, 20, 0));
         for (JComponent option : options) {
             optionsPanel.add(option);
         }
@@ -171,7 +174,7 @@ public class TexasHoldemPanel extends JPanel {
         communityCardsPanel.removeAll();
 
         for (Card card : communityCards) {
-            communityCardsPanel.add(new CardPanel(card));
+            communityCardsPanel.add(new CardPanel(card, CARD_WIDTH));
         }
 
         repaint();

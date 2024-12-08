@@ -7,6 +7,7 @@ Author: brycer28
 
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.CountDownLatch;
 
 import static Logic.Hand.evaluateHand;
 
@@ -19,10 +20,172 @@ public class TexasHoldem {
     private int dealerChips = 1000;
     private int pot = 0;
     private int currentBet = 0;
+    private int playerDecision = -1;
+    private boolean validDecision = false;
+    private boolean decisionMade = false;
+    private int raiseAmount = 0;
+    private CountDownLatch latch;
+
 
     public TexasHoldem() {
+        latch = new CountDownLatch(1); // tells game to listen for one response
         deck = new Deck();
+
+        // deal two cards to each player
+        dealCard(playerHand);
+        dealCard(dealerHand);
+        dealCard(playerHand);
+        dealCard(dealerHand);
+
+        // first betting round (pre-flop)
+        //logic.executeBettingRound();
+
+        // deal three community cards (flop)
+        for (int i=0; i<3; i++) {
+            dealCard(communityCards);
+            try { Thread.sleep(500); } catch (InterruptedException e) {}
+        }
+
+        // second betting round (post-flop)
+        //wait for GUI action
+        //logic.executeBettingRound();
+
+        // deal fourth community card (turn)
+        dealCard(communityCards);
+
+        // third betting round (turn)
+        //wait for GUI action
+        //logic.executeBettingRound();
+
+        // deal final community card (river)
+        dealCard(communityCards);
+
+        // final betting round (showdown)
+        //wait for GUI action
+        //logic.executeBettingRound();
+
+        // evaluate each players hand
+        Hand.HandRanks playerHandValue = Hand.evaluateHand(playerHand);
+        Hand.HandRanks dealerHandValue = Hand.evaluateHand(dealerHand);
+
+        determineWinner(playerHandValue, dealerHandValue);
+
+        System.out.println(playerHand.toString());
+        System.out.println(dealerHand.toString());
     }
+
+    public void dealCard(Hand hand) {
+        // add the top card in the deck to a players hand
+        hand.add(deck.peek());
+
+        // remove top card from stack so it is not used again
+        deck.pop();
+    }
+
+    public void executeBettingRound() {
+        currentBet = 0;
+
+        waitForResponse(); // waits for user to select one of the GUI options
+
+        while (!validDecision) {
+            playerDecision = getPlayerDecision();
+
+            switch (playerDecision) {
+                case 0: // check
+                    handleCheck();
+                    break;
+                case 1:
+                    handleCall();
+                    break;
+                case 2:
+                    handleRaise();
+                    break;
+                case 3:
+                    handleFold();
+                    break;
+
+            }
+        }
+    }
+
+    public void waitForResponse() {
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void handleCheck() {
+        if (currentBet == 0) { validDecision = true; }
+    }
+
+    public void handleCall() {
+        if (playerChips >= currentBet) {
+            playerChips -= currentBet;
+            pot += currentBet;
+            validDecision = true;
+        }
+    }
+
+    public void handleRaise() {
+
+    }
+
+    public void handleFold() {
+        playerChips -= currentBet;
+        dealerChips += pot;
+        //more
+    }
+
+
+    public void determineWinner(Hand.HandRanks player, Hand.HandRanks dealer) {
+        if (player.ordinal() > dealer.ordinal()) {
+            playerChips += pot;
+            dealerChips -= currentBet;
+            System.out.println("You win this round!");
+        } else if (player.ordinal() < dealer.ordinal()) {
+            dealerChips += pot;
+            playerChips -= currentBet;
+            System.out.println("Dealer wins this round!");
+        }
+    }
+
+    public void setPlayerDecision(int decision) {
+        playerDecision = decision;;
+        latch.countDown();
+    }
+
+    public int getPlayerDecision() {
+        while (!decisionMade) {
+            try { wait(); }
+            catch (InterruptedException e) {
+                 e.printStackTrace();
+            }
+        }
+        decisionMade = false;
+        return playerDecision;
+    }
+
+    public int getPlayerDecisionAfterRaise() {
+        System.out.println("Enter Decision [0:call, 1:fold]");
+        Scanner in = new Scanner(System.in);
+        return in.nextInt();
+    }
+
+    public int getPot() {return pot;}
+    public int getCurrentBet() {return currentBet;}
+    public int getDealerChips() {return dealerChips;}
+    public int getPlayerChips() {return playerChips;}
+    public void setRaiseAmount(int raiseInt) {raiseAmount = raiseInt;}
+    public int getRaiseAmount() {return raiseAmount;}
+
+
+
+
+
+
+
 
     // runner class for an instance of the game in the console
     public void TexasHoldEmConsole() {
@@ -84,33 +247,17 @@ public class TexasHoldem {
         System.out.println("You had a " + playerHandValue.toString() + ". Dealer had a " + dealerHandValue.toString() + ".");
     }
 
-
-
-    public void dealCard(Hand hand) {
-        // add the top card in the deck to a players hand
-        hand.add(deck.peek());
-
-        // remove top card from stack so it is not used again
-        deck.pop();
-    }
-
-    public void executeBettingRound() {
+    public void oldExecuteBettingRound() {
         // first show player their hand as well as current community cards
         System.out.println("\nYOUR HAND: " + playerHand.toString());
         System.out.println("COMMUNITY: " + communityCards.toString() + "\n");
 
-        Scanner in = new Scanner(System.in);
         boolean validDecision = false;
         currentBet = 0; // reset bet each round
 
         // loop for validation of option
         while (!validDecision) {
-            // show stats and get option
-            System.out.println("Current pot: " + pot);
-            System.out.println("Current bet: " + currentBet);
-            System.out.println("Current chip count: " + playerChips);
-            System.out.println("Current dealer chip count: " + dealerChips);
-            int playerDecision = getPlayerDecision();
+            int playerDecision = getPlayerDecision(); // waits for GUI response
 
             switch (playerDecision) {
                 case 0: // check
@@ -140,8 +287,7 @@ public class TexasHoldem {
 
                 case 2: // raise
                     // get the amount to raise, validate that player has enough chips, then raise the bet accordingly
-                    System.out.println("Enter amount to raise: ");
-                    int raiseAmount = in.nextInt();
+                    int raiseAmount = getRaiseAmount();
 
                     if (playerChips >= currentBet + raiseAmount) {
                         currentBet += raiseAmount;
@@ -233,31 +379,6 @@ public class TexasHoldem {
                     validDealerDecision = true;
                     break;
             }
-
         }
     }
-
-
-    public int getPlayerDecision() {
-        System.out.println("Enter Decision [0:check, 1:call, 2:raise, 3:fold]: ");
-        Scanner in = new Scanner(System.in);
-        return in.nextInt();
-    }
-
-    public int getPlayerDecisionAfterRaise() {
-        System.out.println("Enter Decision [0:call, 1:fold]");
-        Scanner in = new Scanner(System.in);
-        return in.nextInt();
-    }
-
-    public int getDealerDecision(int currentBet) {
-        // randomly select dealer option
-        Random random = new Random();
-        return random.nextInt(3);
-    }
-
-    public int getPot() {return pot;}
-    public int getCurrentBet() {return currentBet;}
-    public int getDealerChips() {return dealerChips;}
-    public int getPlayerChips() {return playerChips;}
 }
