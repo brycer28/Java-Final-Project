@@ -21,15 +21,16 @@ public class TexasHoldem {
     private int pot = 0;
     private int currentBet = 0;
     private int playerDecision = -1;
+    private int dealerDecision = -1;
     private boolean validDecision = false;
     private boolean decisionMade = false;
+    private boolean validRaise = false;
     private int raiseAmount = 0;
     private CountDownLatch latch;
 
-
     public TexasHoldem() {
-        latch = new CountDownLatch(1); // tells game to listen for one response
         deck = new Deck();
+        latch = new CountDownLatch(1); // tells game to listen for one response
 
         // deal two cards to each player
         dealCard(playerHand);
@@ -38,7 +39,7 @@ public class TexasHoldem {
         dealCard(dealerHand);
 
         // first betting round (pre-flop)
-        //logic.executeBettingRound();
+        executeBettingRound();
 
         // deal three community cards (flop)
         for (int i=0; i<3; i++) {
@@ -46,32 +47,23 @@ public class TexasHoldem {
             try { Thread.sleep(500); } catch (InterruptedException e) {}
         }
 
-        // second betting round (post-flop)
-        //wait for GUI action
-        //logic.executeBettingRound();
+        // wait for a response from GUI then perform second betting round (post-flop)
+        executeBettingRound();
 
         // deal fourth community card (turn)
         dealCard(communityCards);
 
-        // third betting round (turn)
-        //wait for GUI action
-        //logic.executeBettingRound();
+        // wait for a response from GUI then perform third betting round (turn)
+        executeBettingRound();
 
         // deal final community card (river)
         dealCard(communityCards);
 
-        // final betting round (showdown)
-        //wait for GUI action
-        //logic.executeBettingRound();
+        // wait for a response from GUI then perform final betting round (showdown)
+        executeBettingRound();
 
-        // evaluate each players hand
-        Hand.HandRanks playerHandValue = Hand.evaluateHand(playerHand);
-        Hand.HandRanks dealerHandValue = Hand.evaluateHand(dealerHand);
-
-        determineWinner(playerHandValue, dealerHandValue);
-
-        System.out.println(playerHand.toString());
-        System.out.println(dealerHand.toString());
+        // evaluate each players hand and determine a winner
+        determineWinner();
     }
 
     public void dealCard(Hand hand) {
@@ -84,7 +76,6 @@ public class TexasHoldem {
 
     public void executeBettingRound() {
         currentBet = 0;
-
         waitForResponse(); // waits for user to select one of the GUI options
 
         while (!validDecision) {
@@ -103,52 +94,65 @@ public class TexasHoldem {
                 case 3:
                     handleFold();
                     break;
+            }
+        }
 
+        validDecision = false;
+        while (!validDecision) {
+            dealerDecision = getDealerDecision();
+
+            switch (dealerDecision) {
+                case 0: // check
+                    handleCheck();
+                    break;
+                case 1:
+                    handleCall();
+                    break;
+                case 2:
+                    handleRaise();
+                    break;
+                case 3:
+                    handleFold();
+                    break;
             }
         }
     }
 
-    public void waitForResponse() {
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void handleCheck() {
+        // as long as the current bet is 0, player may check
         if (currentBet == 0) { validDecision = true; }
     }
 
     public void handleCall() {
-        if (playerChips >= currentBet) {
+        // if the first player has placed a bet and player has enough chips, player may call/match that bet
+        if (currentBet > 0 && playerChips >= currentBet) {
             playerChips -= currentBet;
             pot += currentBet;
             validDecision = true;
         }
+        //else { // show error message in GUI }
     }
 
     public void handleRaise() {
-
+        // if the player can match the current bet, player may raise the bet if they have enough chips
+        if (playerChips > currentBet) {
+            // get the raise amount entered in JTextBox
+            while (!validRaise) {
+                raiseAmount = getRaiseAmount();
+                if (raiseAmount > 0 && playerChips >= currentBet + raiseAmount) validRaise = true;
+                //else { // show error in GUI }
+            }
+            currentBet += raiseAmount;
+            pot += raiseAmount;
+            playerChips -= raiseAmount;
+            validDecision = true;
+        }
+        //else { // show error message in GUI }
     }
 
     public void handleFold() {
-        playerChips -= currentBet;
-        dealerChips += pot;
-        //more
-    }
-
-
-    public void determineWinner(Hand.HandRanks player, Hand.HandRanks dealer) {
-        if (player.ordinal() > dealer.ordinal()) {
-            playerChips += pot;
-            dealerChips -= currentBet;
-            System.out.println("You win this round!");
-        } else if (player.ordinal() < dealer.ordinal()) {
-            dealerChips += pot;
-            playerChips -= currentBet;
-            System.out.println("Dealer wins this round!");
-        }
+        // player always has the option to fold their hand and forfeit the pot
+        validDecision = true;
     }
 
     public void setPlayerDecision(int decision) {
@@ -159,12 +163,39 @@ public class TexasHoldem {
     public int getPlayerDecision() {
         while (!decisionMade) {
             try { wait(); }
-            catch (InterruptedException e) {
-                 e.printStackTrace();
-            }
+            catch (InterruptedException e) { e.printStackTrace(); }
         }
         decisionMade = false;
         return playerDecision;
+    }
+
+    /* dealer always has 1/20 chance to fold
+
+    otherwise, if the dealer has a strong hand, 50% of the time the dealer will check/call (whichever is applicable)
+    the other 50% of the time the dealer will raise
+
+    if the dealer does not have a strong hand, 50% of the time the dealer will check/call (whichever is applicable)
+    and the other 50% of the time the dealer will fold */
+    public int getDealerDecision() {
+        int handStrength = evaluateHand(dealerHand).ordinal();
+        Random rand = new Random();
+        int prob = rand.nextInt(20) + 1;
+
+        if (prob == 1) return 3; // dealer has a 1/20 chance of folding regardless
+
+        if (handStrength >= Hand.HandRanks.PAIR.ordinal()) {
+            prob = rand.nextInt(2);
+            if (prob == 1) { // 50/50 chance to check/call depending on current bet
+                if (currentBet > 0 && playerChips >= currentBet + raiseAmount) return 1; // call if possible
+                else return 0; // else check
+            } else return 2; // 50/50 chance to raise
+        } else {
+            prob = rand.nextInt(2);
+            if (prob == 1) {
+                if (currentBet > 0 && playerChips >= currentBet + raiseAmount) return 1; // call if possible
+                else return 0; // else check
+            } else return 3; // 50/50 chance to fold
+        }
     }
 
     public int getPlayerDecisionAfterRaise() {
@@ -173,6 +204,31 @@ public class TexasHoldem {
         return in.nextInt();
     }
 
+    public void waitForResponse() {
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void determineWinner() {
+        Hand.HandRanks playerHandValue = Hand.evaluateHand(playerHand);
+        Hand.HandRanks dealerHandValue = Hand.evaluateHand(dealerHand);
+
+        if (playerHandValue.ordinal() > dealerHandValue.ordinal()) {
+            playerChips += pot;
+            dealerChips -= currentBet;
+            System.out.println("You win this round!");
+        } else if (playerHandValue.ordinal() < dealerHandValue.ordinal()) {
+            dealerChips += pot;
+            playerChips -= currentBet;
+            System.out.println("Dealer wins this round!");
+        }
+    }
+
+
+    // getters and setters
     public int getPot() {return pot;}
     public int getCurrentBet() {return currentBet;}
     public int getDealerChips() {return dealerChips;}

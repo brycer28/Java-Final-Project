@@ -145,6 +145,9 @@ public class Hand extends ArrayList<Card> {
     If the first 5 are not a straight, remove the first card and try again. Repeat to check last subset.
     Ex. First, check hand[0-4], then check hand[1-5], and finally check hand [2-6] */
     public static boolean isStraight(Hand hand) {
+        // hand must be at contain 5 cards to make a straight
+        if (hand.size() < 5) return false;
+
         // sort the values in the hand by their ordinal value
         hand.sort(Comparator.comparing(Card::getRank));
 
