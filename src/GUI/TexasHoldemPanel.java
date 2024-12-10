@@ -5,13 +5,12 @@ import Logic.TexasHoldem;
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
+
 import Logic.*;
 
 public class TexasHoldemPanel extends JPanel {
     private TexasHoldem logic;
-    private Hand playerHand = new Hand();
-    private Hand dealerHand = new Hand();
-    private Hand communityCards = new Hand();
     private ArrayList<JComponent> options;
     JPanel playerHandPanel = new JPanel();
     JPanel dealerHandPanel = new JPanel();
@@ -34,7 +33,6 @@ public class TexasHoldemPanel extends JPanel {
     final int LABEL_WIDTH = 100;
     final int LABEL_HEIGHT = 40;
 
-
     public TexasHoldemPanel(TexasHoldem logic) {
         super();
         this.logic = logic;
@@ -44,6 +42,26 @@ public class TexasHoldemPanel extends JPanel {
         setPreferredSize(new Dimension(GAME_WIDTH, GAME_HEIGHT));
         setBackground(new Color(0, 100, 0));
 
+        // create and add hand panels and community cards
+        List<JPanel> handPanels = initHands();
+        for (JPanel panel : handPanels) {
+            add(panel);
+        }
+
+        // create and add an options panel
+        optionsPanel = initOptions();
+        optionsPanel.setBounds((GAME_WIDTH/2-OPT_WIDTH/2), 40, OPT_WIDTH, OPT_HEIGHT);
+        optionsPanel.setBackground(new Color(0, 100, 0));
+        add(optionsPanel);
+
+        // create and add a stats panel to show current stats
+        statsPanel.setBounds(20, 20, STATS_WIDTH, STATS_HEIGHT);
+        statsPanel.setBackground(new Color(0, 150, 0));
+        add(statsPanel);
+        updateStats();
+    }
+
+    public List<JPanel> initHands() {
         // create and add hand panels and community cards panel
         playerHandPanel.setBounds((GAME_WIDTH/2-HAND_WIDTH/2), 600, HAND_WIDTH, HAND_HEIGHT);
         playerHandPanel.setBackground(new Color(0, 150, 0));
@@ -57,17 +75,7 @@ public class TexasHoldemPanel extends JPanel {
         communityCardsPanel.setBackground(new Color(0, 150, 0));
         add(communityCardsPanel);
 
-        // create adn add an options panel
-        optionsPanel = initOptions();
-        optionsPanel.setBounds((GAME_WIDTH/2-OPT_WIDTH/2), 40, OPT_WIDTH, OPT_HEIGHT);
-        optionsPanel.setBackground(new Color(0, 100, 0));
-        add(optionsPanel);
-
-        // create and add a stats panel to show current stats
-        statsPanel.setBounds(20, 20, STATS_WIDTH, STATS_HEIGHT);
-        statsPanel.setBackground(new Color(0, 150, 0));
-        add(statsPanel);
-        updateStats();
+        return Arrays.asList(playerHandPanel, dealerHandPanel, communityCardsPanel);
     }
 
     public JPanel initOptions() {
@@ -78,7 +86,6 @@ public class TexasHoldemPanel extends JPanel {
         checkButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
         checkButton.addActionListener(e -> {
             logic.setPlayerDecision(0);
-            updateDisplay();
         });
 
         // create call button
@@ -86,7 +93,6 @@ public class TexasHoldemPanel extends JPanel {
         callButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
         callButton.addActionListener(e -> {
             logic.setPlayerDecision(1);
-            updateDisplay();
         });
 
         // create fold button
@@ -94,14 +100,13 @@ public class TexasHoldemPanel extends JPanel {
         foldButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
         foldButton.addActionListener(e -> {
             logic.setPlayerDecision(2);
-            updateDisplay();
         });
 
         // create raise field and button to submit
         JTextField raiseField = new JTextField(5);
         raiseField.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
 
-        // submit raise field
+        // create submit raise field
         JButton raiseButton = new JButton("Raise");
         raiseButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
         raiseButton.addActionListener(e -> {
@@ -117,7 +122,7 @@ public class TexasHoldemPanel extends JPanel {
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null, "You can't raise a negative number", "Error", JOptionPane.ERROR_MESSAGE);
             }
-            updateDisplay();
+            raiseField.setText("");
         });
 
         options.add(checkButton);
@@ -138,19 +143,14 @@ public class TexasHoldemPanel extends JPanel {
     // update all components of the GUI
     public void updateDisplay() {
         SwingUtilities.invokeLater(() -> {
-
-
             updateStats();
-            updateHands();
             updateCommunityCards();
 
             System.out.println(logic.getPlayerHand());
-
-            repaint();
-            revalidate();
         });
     }
 
+    // remove and redraw all stats
     public void updateStats() {
         statsPanel.removeAll();
         statsPanel.setLayout(new GridLayout(4,1,20,0));
@@ -170,27 +170,46 @@ public class TexasHoldemPanel extends JPanel {
         JLabel dealerChipsLabel = new JLabel("Dealer Chips: " + logic.getDealerChips());
         dealerChipsLabel.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT));
         statsPanel.add(dealerChipsLabel);
+
+        repaint();
+        revalidate();
     }
 
+    // remove and redraw all cards in player and dealer hands
     public void updateHands() {
         playerHandPanel.removeAll();
         dealerHandPanel.removeAll();
 
-        for (Card card : playerHand) {
-            playerHandPanel.add(new CardPanel(card, CARD_WIDTH));
+        for (Card card : logic.getPlayerHand()) {
+            card.toggleFaceUp();
+            CardPanel cardPanel = new CardPanel(card, CARD_WIDTH);
+            playerHandPanel.add(cardPanel);
         }
 
-        for (Card card : dealerHand) {
-            card.toggleFaceUp();
-            dealerHandPanel.add(new CardPanel(card, CARD_WIDTH));
+        for (Card card : logic.getDealerHand()) {
+            CardPanel cardPanel = new CardPanel(card, CARD_WIDTH);
+            dealerHandPanel.add(cardPanel);
         }
+
+        repaint();
+        revalidate();
     }
 
+    // remove and redraw all community cards
     public void updateCommunityCards() {
         communityCardsPanel.removeAll();
 
-        for (Card card : communityCards) {
-            communityCardsPanel.add(new CardPanel(card, CARD_WIDTH));
+        for (Card card : logic.getCommunityCards()) {
+            card.setFaceUp();
+            CardPanel cardPanel = new CardPanel(card, CARD_WIDTH);
+            communityCardsPanel.add(cardPanel);
         }
+
+        repaint();
+        revalidate();
+    }
+
+    public void displayGameOver() {
+        JOptionPane.showMessageDialog(null, "Game Over", "Error", JOptionPane.ERROR_MESSAGE);
     }
 }

@@ -79,7 +79,7 @@ public class CardPanel extends JPanel {
     /**
      * Constructor that displays a card of the given Card
      *
-     * @param type  the card that will be displayed
+     * @param card  the card that will be displayed
      * @param width the width the card will be
      */
     public CardPanel(Card card, int width) {
@@ -102,14 +102,14 @@ public class CardPanel extends JPanel {
     /**
      * Constructor that displays a card of the given Card
      *
-     * @param type the card that will be displayed
+     * @param card the card that will be displayed
      */
     public CardPanel(Card card) {
         super();
         this.setOpaque(false);
         this.setLayout(null);
         this.card = card;
-        card.toggleFaceUp();
+        //card.toggleFaceUp();
         setCardType(card);
 
         getImage();
@@ -254,9 +254,6 @@ public class CardPanel extends JPanel {
         newImg = scaleOP.filter(image, null);
 
         this.image = newImg;
-    }
-
-    private void getImagePath() {
     }
 
     private void setCard() {
@@ -413,6 +410,12 @@ public class CardPanel extends JPanel {
         frame.pack();
         frame.setVisible(true);
 
+    }
+
+    public void setFaceUp() {
+        if (!card.isFaceUp()) {
+            card.toggleFaceUp();
+        }
     }
 
 }

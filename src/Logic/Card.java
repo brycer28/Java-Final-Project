@@ -81,4 +81,6 @@ public class Card {
     public void toggleFaceUp() {
         faceUp = !faceUp;
     }
+
+    public void setFaceUp() {faceUp = true;}
 }
