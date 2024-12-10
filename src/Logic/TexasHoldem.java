@@ -5,6 +5,9 @@ Game 1 : Texas Hold'em
 Author: brycer28
  */
 
+import GUI.TexasHoldemPanel;
+
+import javax.swing.*;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
@@ -12,6 +15,7 @@ import java.util.concurrent.CountDownLatch;
 import static Logic.Hand.evaluateHand;
 
 public class TexasHoldem {
+    private TexasHoldemPanel GUI;
     private Deck deck;
     private Hand playerHand = new Hand();
     private Hand dealerHand = new Hand();
@@ -29,41 +33,46 @@ public class TexasHoldem {
     private CountDownLatch latch;
 
     public TexasHoldem() {
+        GUI = new TexasHoldemPanel(this);
         deck = new Deck();
-        latch = new CountDownLatch(1); // tells game to listen for one response
 
-        // deal two cards to each player
-        dealCard(playerHand);
-        dealCard(dealerHand);
-        dealCard(playerHand);
-        dealCard(dealerHand);
+        new Thread(() -> {
+            // deal two cards to each player
+            dealCard(playerHand);
+            dealCard(dealerHand);
+            dealCard(playerHand);
+            dealCard(dealerHand);
 
-        // first betting round (pre-flop)
-        executeBettingRound();
+            GUI.updateDisplay();
 
-        // deal three community cards (flop)
-        for (int i=0; i<3; i++) {
-            dealCard(communityCards);
-            try { Thread.sleep(500); } catch (InterruptedException e) {}
-        }
-
-        // wait for a response from GUI then perform second betting round (post-flop)
-        executeBettingRound();
-
-        // deal fourth community card (turn)
-        dealCard(communityCards);
-
-        // wait for a response from GUI then perform third betting round (turn)
-        executeBettingRound();
-
-        // deal final community card (river)
-        dealCard(communityCards);
-
-        // wait for a response from GUI then perform final betting round (showdown)
-        executeBettingRound();
-
-        // evaluate each players hand and determine a winner
-        determineWinner();
+//            // first betting round (pre-flop)
+//            executeBettingRound();
+//
+//            System.out.println("foo");
+//
+//            // deal three community cards (flop)
+//            for (int i=0; i<3; i++) {
+//                dealCard(communityCards);
+//            }
+//
+//            // wait for a response from GUI then perform second betting round (post-flop)
+//            executeBettingRound();
+//
+//            // deal fourth community card (turn)
+//            dealCard(communityCards);
+//
+//            // wait for a response from GUI then perform third betting round (turn)
+//            executeBettingRound();
+//
+//            // deal final community card (river)
+//            dealCard(communityCards);
+//
+//            // wait for a response from GUI then perform final betting round (showdown)
+//            executeBettingRound();
+//
+//            // evaluate each players hand and determine a winner
+//            determineWinner();
+        }).start();
     }
 
     public void dealCard(Hand hand) {
@@ -76,6 +85,8 @@ public class TexasHoldem {
 
     public void executeBettingRound() {
         currentBet = 0;
+        latch = new CountDownLatch(1);
+
         waitForResponse(); // waits for user to select one of the GUI options
 
         while (!validDecision) {
@@ -156,15 +167,11 @@ public class TexasHoldem {
     }
 
     public void setPlayerDecision(int decision) {
-        playerDecision = decision;;
+        playerDecision = decision;
         latch.countDown();
     }
 
     public int getPlayerDecision() {
-        while (!decisionMade) {
-            try { wait(); }
-            catch (InterruptedException e) { e.printStackTrace(); }
-        }
         decisionMade = false;
         return playerDecision;
     }
@@ -227,7 +234,6 @@ public class TexasHoldem {
         }
     }
 
-
     // getters and setters
     public int getPot() {return pot;}
     public int getCurrentBet() {return currentBet;}
@@ -235,13 +241,8 @@ public class TexasHoldem {
     public int getPlayerChips() {return playerChips;}
     public void setRaiseAmount(int raiseInt) {raiseAmount = raiseInt;}
     public int getRaiseAmount() {return raiseAmount;}
-
-
-
-
-
-
-
+    public TexasHoldemPanel getGui() {return GUI;}
+    public Hand getPlayerHand() {return playerHand;}
 
     // runner class for an instance of the game in the console
     public void TexasHoldEmConsole() {
