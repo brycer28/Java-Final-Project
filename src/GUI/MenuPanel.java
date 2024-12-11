@@ -105,8 +105,7 @@ public class MenuPanel extends JPanel {
         solitairePanel = new SolitairePanel();
         solitairePanel.setSize(new Dimension(this.getWidth(), this.getHeight()));
         this.add(solitairePanel);
-        this.validate();
-        this.repaint();
+        solitairePanel.start();
     }
 
     private void startBlackjack() {

@@ -36,32 +36,30 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     int returnX = 0, returnY = 0;
     int returnColumn = -1;
     int returnFoundation = -1;
-    CardPanel deckPanel = new CardPanel(CardType.BACK, WIDTH);
+    CardPanel deckPanel;
     final int drawX = 200, drawY = 10, deckX = 10, deckY = 10;
     ArrayList<Point> foundationCoord;
     ArrayList<Point> columnCoord;
     JPanel background;
-    int zValue = 0;
     JButton restartButton;
     JButton quitButton;
-    JButton startButton;
 
     public SolitairePanel() {
         super();
-        this.setBackground(new Color(0, 100, 0));
-        startButton = new JButton("Start Solitaire");
-        startButton.addActionListener(e -> init());
-        startButton.setLocation(100, 100);
-        startButton.setSize(200, 40);
-        this.add(startButton);
     }
 
-    private void init() {
-        this.remove(startButton);
+    public void start() {
+        initComponents();
+        this.addMouseListener(this);
+        this.addMouseMotionListener(this);
+    }
+
+    private void initComponents() {
         logic = new Solitaire();
         movableCards = new ArrayList<>();
         unflippedCards = new ArrayList<>();
         movingCards = new ArrayList<>();
+        deckPanel = new CardPanel(CardType.BACK, WIDTH);
         this.setLayout(null);
         this.setOpaque(false);
 
@@ -70,8 +68,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         initFoundations();
         initColumns();
         initButtons();
-        this.addMouseListener(this);
-        this.addMouseMotionListener(this);
+        updateDisplayedZOrder();
         repaint();
     }
 
@@ -126,7 +123,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     private void restartGame() {
         // clear screen
         this.removeAll();
-        init();
+        initComponents();
     }
 
     /**
@@ -190,6 +187,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
             cardPanel.setLocation(columnCoord.get(columnNum));
             addNonMovableCard(cardPanel);
             incrementColumnCoord(columnNum);
+
             cardPanel.flipCard();
 
             if (j == 0) {
@@ -203,7 +201,6 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
      */
     private void initDeck() {
 
-        deckPanel = new CardPanel(CardType.BACK, WIDTH);
         deckPanel.setLocation(new Point(deckX, deckY));
         deck = new ArrayList<>();
 
@@ -245,6 +242,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         if (logic.getDeckIndex() == logic.getDeckSize() - 1) {
             deckPanel.setVisible(false);
         } else if (!deckPanel.isVisible() && logic.getDeckSize() != 0) {
+
             // sets the deck card to visible and clears the displayed cards
             // early return to not iterate the card once
             deckPanel.setVisible(true);
@@ -257,9 +255,12 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
             return;
         }
 
+        // if the card is not already face up, makes face up
         if (next.isFaceUp()) {
             next.toggleFaceUp();
         }
+
+        // display the next card
         var nextCard = new CardPanel(next, WIDTH);
         nextCard.setLocation(new Point(drawX, drawY));
         addMovableCard(nextCard);
@@ -302,7 +303,8 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
      */
     private void updateDisplayedZOrder() {
         int i = unflippedCards.size() + movableCards.size();
-        this.setComponentZOrder(background, i + 1);
+        this.setComponentZOrder(deckPanel, 0);
+        this.setComponentZOrder(background, this.getComponentCount() - 1);
         for (CardPanel panel : unflippedCards) {
             this.setComponentZOrder(panel, i);
             i--;
