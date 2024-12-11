@@ -1,5 +1,3 @@
-//TODO: card order needs to be fixed when placing in foundation
-//Foundation does not check suit properly
 package GUI;
 
 import Logic.*;
@@ -18,11 +16,11 @@ import java.util.Arrays;
 import javax.swing.*;
 
 public class SolitairePanel extends JPanel implements MouseListener, MouseMotionListener {
-    final int WIDTH = 150;
-    final int CARDVERTSPACE = 30;
+    int cardWidth = 150;
+    int cardVertSpace = 30;
     final int CARDHORIZSPACE = 20;
     final int COLUMNSTARTX = 20;
-    final int COLUMNSTARTY = 300;
+    int columnStartY = 300;
     Solitaire logic;
     ArrayList<CardPanel> movableCards;
     ArrayList<CardPanel> unflippedCards;
@@ -59,7 +57,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         movableCards = new ArrayList<>();
         unflippedCards = new ArrayList<>();
         movingCards = new ArrayList<>();
-        deckPanel = new CardPanel(CardType.BACK, WIDTH);
+        deckPanel = new CardPanel(CardType.BACK, cardWidth);
         this.setLayout(null);
         this.setOpaque(false);
 
@@ -153,7 +151,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
      * Initializes the Column stacks
      */
     private void initColumns() {
-        int x = COLUMNSTARTX, y = COLUMNSTARTY;
+        int x = COLUMNSTARTX, y = columnStartY;
         columnCoord = new ArrayList<>();
         columns = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
@@ -181,7 +179,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         for (int j = columnNum; j >= 0; j--) {
             Card card = logic.getColumn(columnNum).get(index);
             index++;
-            var cardPanel = new CardPanel(card, WIDTH);
+            var cardPanel = new CardPanel(card, cardWidth);
 
             columns.get(columnNum).add(cardPanel);
             cardPanel.setLocation(columnCoord.get(columnNum));
@@ -261,7 +259,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         }
 
         // display the next card
-        var nextCard = new CardPanel(next, WIDTH);
+        var nextCard = new CardPanel(next, cardWidth);
         nextCard.setLocation(new Point(drawX, drawY));
         addMovableCard(nextCard);
         deck.add(nextCard);
@@ -345,7 +343,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
             int y = event.getY() + clickOffsetY;
 
             panel.setLocation(new Point(x, y + offset));
-            offset += CARDVERTSPACE;
+            offset += cardVertSpace;
             this.setComponentZOrder(panel, 0);
         }
         repaint();
@@ -578,11 +576,11 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     private int idColumnWhole(int x, int y) {
         for (int index = 0; index < columnCoord.size(); index++) {
             Point point = columnCoord.get(index);
-            int height = columns.get(index).size() * CARDVERTSPACE;
+            int height = columns.get(index).size() * cardVertSpace;
             Point newPoint = new Point((int) point.getX(), (int) point.getY() - height);
             height = height + deckPanel.getHeight();
 
-            if (inDimensionAtCoord(newPoint, x, y, WIDTH, height)) {
+            if (inDimensionAtCoord(newPoint, x, y, cardWidth, height)) {
                 return index;
             }
         }
@@ -661,12 +659,24 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     private void incrementColumnCoord(int columnNum) {
         columnCoord.set(columnNum,
                 new Point((int) columnCoord.get(columnNum).getX(),
-                        (int) columnCoord.get(columnNum).getY() + CARDVERTSPACE));
+                        (int) columnCoord.get(columnNum).getY() + cardVertSpace));
     }
 
     private void decrementColumnCoord(int columnNum) {
         columnCoord.set(columnNum,
                 new Point((int) columnCoord.get(columnNum).getX(),
-                        (int) columnCoord.get(columnNum).getY() - CARDVERTSPACE));
+                        (int) columnCoord.get(columnNum).getY() - cardVertSpace));
+    }
+
+    /**
+     * Overrides the set size so that the cards size and spacing can be changed
+     * to fit the screen
+     */
+    @Override
+    public void setSize(Dimension dimension) {
+        super.setSize(dimension);
+        this.cardWidth = (int) (dimension.getHeight() / 6.66);
+        this.cardVertSpace = (int) (dimension.getHeight() / 33.3);
+        this.columnStartY = (int) (dimension.getHeight() / 3.33);
     }
 }
