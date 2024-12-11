@@ -188,7 +188,7 @@ public class TexasHoldemPanel extends JPanel {
             dealerHandPanel.removeAll();
 
             for (Card card : logic.getPlayerHand()) {
-                card.toggleFaceUp();
+                card.setFaceUp();
                 CardPanel cardPanel = new CardPanel(card, CARD_WIDTH);
                 playerHandPanel.add(cardPanel);
             }
@@ -224,6 +224,8 @@ public class TexasHoldemPanel extends JPanel {
         dealerHandPanel.removeAll();
         communityCardsPanel.removeAll();
         updateStats();
+        updateHands();
+        updateCommunityCards();
 
         revalidate();
         repaint();
@@ -258,6 +260,10 @@ public class TexasHoldemPanel extends JPanel {
                 JOptionPane.QUESTION_MESSAGE
         );
         return choice == JOptionPane.YES_OPTION;
+    }
+
+    public JFrame getFrame() {
+        return (JFrame) SwingUtilities.getWindowAncestor(this);
     }
 
 

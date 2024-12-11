@@ -1,4 +1,3 @@
-import GUI.TexasHoldemPanel;
 import Logic.TexasHoldem;
 
 import javax.swing.*;

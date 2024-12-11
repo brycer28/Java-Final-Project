@@ -46,14 +46,17 @@ public class TexasHoldem {
             while (gameRunning) {
                 playRound();
 
-                boolean playAgain = GUI.displayReplayPrompt();
+                boolean playAgain = true;
+                playAgain = GUI.displayReplayPrompt();
                 if (!playAgain) {
                     // prompt for next round?
                     gameRunning = false;
                     break;
                 }
+                gameRunning = true;
                 reset();
             }
+            GUI.getFrame().dispose();
         }).start();
     }
 
@@ -115,7 +118,6 @@ public class TexasHoldem {
 
     // execute a betting round by getting each players decision from the GUI and handling accordingly
     public void executeBettingRound() {
-
         currentBet = 0;
         // tells the program to wait and listen for 1 response from GUI, which sets the playerDecision
         this.latch = new CountDownLatch(1);
@@ -209,7 +211,6 @@ public class TexasHoldem {
             // get the raise amount entered in JTextBox
             while (!validRaise) {
                 raiseAmount = getRaiseAmount();
-                System.out.println("Raise: " + raiseAmount);
                 if (raiseAmount > 0 && playerChips >= currentBet + raiseAmount) {
                     validRaise = true;
                 }
@@ -297,6 +298,7 @@ public class TexasHoldem {
         playerHand = new Hand();
         dealerHand = new Hand();
         communityCards = new Hand();
+        pot = 0;
         GUI.resetGUI();
     }
 
