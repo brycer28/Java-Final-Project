@@ -15,6 +15,7 @@ public class MenuPanel extends JPanel {
     private TexasHoldemPanel pokerPanel;
     private SolitairePanel solitairePanel;
     private BlackjackPanel blackjackPanel;
+    private Blackjack blackjackGame;
     private CrazyEightsPanel crazy8Panel;
 
     public MenuPanel() {
@@ -109,7 +110,13 @@ public class MenuPanel extends JPanel {
     }
 
     private void startBlackjack() {
-
+        this.removeAll();
+        blackjackGame = new Blackjack();
+        blackjackPanel = new BlackjackPanel(blackjackGame);
+        blackjackPanel.setSize(new Dimension(this.getWidth(), this.getHeight()));
+        this.add(blackjackPanel);
+        this.validate();
+        this.repaint();
     }
 
     private void startCrazy8() {
