@@ -85,6 +85,13 @@ public class CrazyEightsPanel extends JPanel {
         updateCardPanels();
 
     }
+    
+    private void closeGame() {
+        if (this.getParent() instanceof MenuPanel menu) {
+            menu.endGame(this);
+        }
+
+    }
 
     //Method for Update GUI Aspect of Plays
     //Handles the dealers turn updates as well
