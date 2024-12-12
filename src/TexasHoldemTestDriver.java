@@ -1,4 +1,4 @@
-import GUI.TexasHoldemPanel;
+import Logic.TexasHoldem;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,9 +11,9 @@ public class TexasHoldemTestDriver {
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        TexasHoldemPanel texasHoldEm = new TexasHoldemPanel();
+        TexasHoldem texasHoldem = new TexasHoldem();
 
-        frame.add(texasHoldEm);
+        frame.add(texasHoldem.getGui());
 
         frame.setVisible(true);
         frame.pack();
