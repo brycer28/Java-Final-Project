@@ -180,6 +180,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
             Card card = logic.getColumn(columnNum).get(index);
             index++;
             var cardPanel = new CardPanel(card, cardWidth);
+            cardPanel.flipCard();
 
             columns.get(columnNum).add(cardPanel);
             cardPanel.setLocation(columnCoord.get(columnNum));
@@ -260,6 +261,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
 
         // display the next card
         var nextCard = new CardPanel(next, cardWidth);
+        nextCard.flipCard();
         nextCard.setLocation(new Point(drawX, drawY));
         addMovableCard(nextCard);
         deck.add(nextCard);
