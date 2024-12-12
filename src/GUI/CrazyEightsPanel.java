@@ -76,7 +76,7 @@ public class CrazyEightsPanel extends JPanel {
 
         endGameButton = new JButton("End Game");
         add(endGameButton);
-        endGameButton.addActionListener(e - > {
+        endGameButton.addActionListener(e -> {
              closeGame();
         });  
     

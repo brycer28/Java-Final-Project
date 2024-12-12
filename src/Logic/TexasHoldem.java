@@ -55,7 +55,7 @@ public class TexasHoldem {
                 gameRunning = true;
                 reset();
             }
-            GUI.getFrame().dispose();
+            GUI.endGame();
         }).start();
     }
 

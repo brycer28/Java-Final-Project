@@ -17,6 +17,8 @@ public class TexasHoldemPanel extends JPanel {
     JPanel communityCardsPanel = new JPanel();
     JPanel optionsPanel = new JPanel();
     JPanel statsPanel = new JPanel();
+    JPanel quitPanel = new JPanel();
+    JButton quitButton = new JButton("Quit");
     final int CARD_WIDTH = 100;
     final int GAME_WIDTH = 1500;
     final int GAME_HEIGHT = 1000;
@@ -32,6 +34,8 @@ public class TexasHoldemPanel extends JPanel {
     final int STATS_HEIGHT = 200;
     final int LABEL_WIDTH = 100;
     final int LABEL_HEIGHT = 40;
+    final int QUIT_WIDTH = 100;
+    final int QUIT_HEIGHT = 30;
 
     public TexasHoldemPanel(TexasHoldem logic) {
         super();
@@ -58,6 +62,15 @@ public class TexasHoldemPanel extends JPanel {
         statsPanel.setBounds(20, 20, STATS_WIDTH, STATS_HEIGHT);
         statsPanel.setBackground(new Color(0, 150, 0));
         add(statsPanel);
+
+        // create and add a quit button
+        quitPanel.setBounds(25, 40 + STATS_HEIGHT, QUIT_WIDTH, QUIT_HEIGHT);
+        quitPanel.setBackground((new Color(0, 100, 0)));
+        quitButton.setPreferredSize(new Dimension(QUIT_WIDTH, QUIT_HEIGHT));
+        quitButton.addActionListener(e -> { endGame(); });
+        quitPanel.add(quitButton);
+        add(quitPanel);
+
         updateStats();
     }
 
@@ -266,5 +279,10 @@ public class TexasHoldemPanel extends JPanel {
         return (JFrame) SwingUtilities.getWindowAncestor(this);
     }
 
+    public void endGame() {
+        if (this.getParent() instanceof MenuPanel menu) {
+            menu.endGame(this);
+        }
+    }
 
 }
