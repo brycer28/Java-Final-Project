@@ -18,6 +18,7 @@ public class CrazyEightsPanel extends JPanel {
     private CardPanel playedPilePanel;
     //For when an 8 is played
     private final JButton[] suitButtons;
+    private final JButton endGameButton;
     private final JLabel gameMessageLabel;
 
     public CrazyEightsPanel() {
@@ -73,7 +74,12 @@ public class CrazyEightsPanel extends JPanel {
             updateCardPanels();
         });
 
-
+        endGameButton = new JButton("End Game");
+        add(endGameButton);
+        endGameButton.addActionListener(e - > {
+             closeGame();
+        });  
+    
         //All together in case of needed changes
         //playedPilePanel.setBounds(350, 200, playedPilePanel.getWidth(), playedPilePanel.getHeight());
         gameMessageLabel.setBounds(10, 300, 700, 30);
