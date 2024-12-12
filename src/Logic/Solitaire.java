@@ -3,6 +3,12 @@ package Logic;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+/**
+ * Solitaire Game logic class. Contains all of the logic to run a game of
+ * Solitaire
+ *
+ * @author Travis Clark
+ */
 public class Solitaire {
     Deck deck;
     ArrayList<ArrayList<Card>> foundation;

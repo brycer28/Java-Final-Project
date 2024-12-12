@@ -15,6 +15,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.ScrollPane;
+import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -109,7 +110,7 @@ public class CardPanel extends JPanel {
         this.setOpaque(false);
         this.setLayout(null);
         this.card = card;
-        //card.toggleFaceUp();
+        // card.toggleFaceUp();
         setCardType(card);
 
         getImage();

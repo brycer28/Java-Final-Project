@@ -15,6 +15,17 @@ import java.util.Arrays;
 
 import javax.swing.*;
 
+/**
+ * Solitaire Game Panel that displays and allows the play of a game of
+ * Solitaire.
+ * To start the start() method must be called.
+ * When the game is exited, the super class must be a JPanel and it must have a
+ * method endGame(JPanel). This method is called when the game is ended and
+ * should
+ * clear the SolitairePanel from the display.
+ * 
+ * @author Travis Clark
+ */
 public class SolitairePanel extends JPanel implements MouseListener, MouseMotionListener {
     int cardWidth = 150;
     int cardVertSpace = 30;
@@ -46,12 +57,20 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         super();
     }
 
+    /**
+     * When called, creates the game and displays it.
+     * Must be called or the screen is blank
+     */
     public void start() {
         initComponents();
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
     }
 
+    /**
+     * Initializes the elements that will be displayed when the game is first
+     * started
+     */
     private void initComponents() {
         logic = new Solitaire();
         movableCards = new ArrayList<>();
@@ -70,12 +89,18 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
         repaint();
     }
 
+    /**
+     * Helper method that adds the panel to the game panel and sets it Z order
+     */
     private void addPanel(JPanel panel) {
         this.add(panel);
         this.setComponentZOrder(panel, 0);
 
     }
 
+    /**
+     * Initializes the Background that is displayed behind the cars
+     */
     private void initBackground() {
         background = new JPanel();
         placeHolders = new ArrayList<>();
@@ -340,6 +365,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     @Override
     public void mouseDragged(MouseEvent event) {
         int offset = 0;
+
         for (CardPanel panel : movingCards) {
             int x = event.getX() + clickOffsetX;
             int y = event.getY() + clickOffsetY;
@@ -366,6 +392,7 @@ public class SolitairePanel extends JPanel implements MouseListener, MouseMotion
     @Override
     public void mousePressed(MouseEvent event) {
         clickedCard = isMovableCardCoord(event.getX(), event.getY());
+
         if (clickedCard != null) {
             movingCards = getMovingCards(clickedCard, idColumnWhole(event.getX(), event.getY()));
             returnX = clickedCard.getX();
