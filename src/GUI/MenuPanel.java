@@ -128,6 +128,12 @@ public class MenuPanel extends JPanel {
     }
 
     private void startCrazy8() {
+        this.removeAll();
+        crazy8Panel = new CrazyEightsPanel();
+        crazy8Panel.setSize(new Dimension(this.getWidth(), this.getHeight()));
+        this.add(crazy8Panel);
+        this.validate();
+        this.repaint();
 
     }
 
