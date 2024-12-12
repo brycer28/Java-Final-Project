@@ -8,7 +8,6 @@ Author: brycer28
 import GUI.TexasHoldemPanel;
 
 import java.util.Random;
-import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 
 import static Logic.Hand.evaluateHand;

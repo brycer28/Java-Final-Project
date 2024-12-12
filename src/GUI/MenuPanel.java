@@ -12,7 +12,8 @@ public class MenuPanel extends JPanel {
     private JButton solitaireButton;
     private JButton blackjackButton;
     private JButton crazy8Button;
-    private TexasHoldemPanel pokerPanel;
+    private TexasHoldem texasHoldemGame;
+    private TexasHoldemPanel texasHoldemPanel;
     private SolitairePanel solitairePanel;
     private BlackjackPanel blackjackPanel;
     private Blackjack blackjackGame;
@@ -97,7 +98,13 @@ public class MenuPanel extends JPanel {
     }
 
     private void startPoker() {
-
+        this.removeAll();
+        texasHoldemGame = new TexasHoldem();
+        texasHoldemPanel = texasHoldemGame.getGui();
+        texasHoldemPanel.setSize(new Dimension(this.getWidth(), this.getHeight()));
+        this.add(texasHoldemPanel);
+        this.validate();
+        this.repaint();
     }
 
     private void startSolitaire() {
@@ -106,6 +113,8 @@ public class MenuPanel extends JPanel {
         solitairePanel.setSize(new Dimension(this.getWidth(), this.getHeight()));
         this.add(solitairePanel);
         solitairePanel.start();
+        this.repaint();
+        this.revalidate();
     }
 
     private void startBlackjack() {
