@@ -85,6 +85,7 @@ public class CrazyEightsPanel extends JPanel {
         gameMessageLabel.setBounds(10, 300, 700, 30);
         suitButtonsPanel.setBounds(720, 150, 100, 200);
         resetButton.setBounds(50, 150, 120, 40);
+        endGameButton.setBounds(50, 350, 120, 40);
         drawButton.setBounds(50, 250, 120, 40);
 
         //Initialize the card panels
